@@ -40,6 +40,9 @@ from social_agent import SocialAgent
 # Import logging utilities
 from logging_utils import execution_logger, log_exception, log_summary
 
+# Import multiprocessing support
+from processing_pool import ProcessingPool
+
 # Load environment variables from .env file
 load_dotenv()
 
@@ -666,6 +669,34 @@ def process_single_application_step2(
         }
 
 
+def _worker_process_application_step2(args_tuple) -> dict:
+    """
+    Worker function for multiprocessing.
+
+    Must be at module level (not nested) to be picklable.
+    Accepts a tuple of arguments since multiprocessing map can only pass one argument per worker.
+
+    Args:
+        args_tuple: (output_folder, model_name, personal_criteria, recommendation_criteria,
+                     application_criteria, academic_criteria, social_criteria, verbose)
+
+    Returns:
+        Result dictionary from process_single_application_step2
+    """
+    (output_folder, model_name, personal_criteria, recommendation_criteria,
+     application_criteria, academic_criteria, social_criteria, verbose) = args_tuple
+    return process_single_application_step2(
+        output_folder=output_folder,
+        model_name=model_name,
+        verbose=False,  # Disable verbose in worker to avoid log spam
+        additional_criteria=personal_criteria,
+        recommendation_criteria=recommendation_criteria,
+        application_criteria=application_criteria,
+        academic_criteria=academic_criteria,
+        social_criteria=social_criteria
+    )
+
+
 def main():
     """Main function with command-line argument parsing."""
     parser = argparse.ArgumentParser(
@@ -734,7 +765,14 @@ Examples:
         action="store_true",
         help="Suppress verbose output (only show errors and summary)"
     )
-    
+
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=0,
+        help="Number of worker processes for parallel processing (default: 0 = sequential). Set to > 0 to enable multiprocessing. Profile generation uses threading (I/O-bound) so you can use more workers than CPU count."
+    )
+
     args = parser.parse_args()
     
     # Get configuration from arguments or environment variables
@@ -914,29 +952,43 @@ Examples:
         if verbose:
             print(f"  Found {len(application_folders)} application folders")
         
-        # Process each application folder
-        for i, app_folder in enumerate(application_folders, 1):
-            if verbose and len(application_folders) > 1:
-                print(f"\n  [{i}/{len(application_folders)}] Processing: {app_folder}")
-            
-            folder_path = scholarship_path / app_folder
-            result = process_single_application_step2(
-                output_folder=str(folder_path),
-                model_name=model_name,
-                verbose=verbose,
-                additional_criteria=personal_criteria,
-                recommendation_criteria=recommendation_criteria,
-                application_criteria=application_criteria,
-                academic_criteria=academic_criteria,
-                social_criteria=social_criteria
+        # Prepare arguments for multiprocessing
+        # Note: Step 2 uses multiple criteria arguments
+        worker_args = [
+            (
+                str(scholarship_path / app_folder),
+                model_name,
+                personal_criteria,
+                recommendation_criteria,
+                application_criteria,
+                academic_criteria,
+                social_criteria,
+                verbose
             )
-            
-            all_results.append(result)
-            if result["success"]:
-                total_successful += 1
-            else:
-                total_failed += 1
-                if verbose:
+            for app_folder in application_folders
+        ]
+
+        # Process using pool (use threading for I/O-bound Ollama API calls)
+        if verbose and args.workers > 0:
+            print(f"\n  Using {args.workers} worker threads for parallel processing")
+
+        with ProcessingPool(num_workers=args.workers, use_threading=True, verbose=verbose) as pool:
+            if verbose and len(application_folders) > 1:
+                print(f"  Processing {len(application_folders)} applications...")
+            results = pool.map_unordered(
+                _worker_process_application_step2,
+                worker_args,
+                show_progress=verbose
+            )
+
+        # Consolidate results
+        all_results.extend(results)
+        total_successful += sum(1 for r in results if r.get("success", False))
+        total_failed += sum(1 for r in results if not r.get("success", False))
+
+        if verbose and total_failed > 0:
+            for result in results:
+                if not result.get("success", False):
                     print(f"  ERROR: {result.get('error', 'Unknown error')}")
     
     # Print final summary

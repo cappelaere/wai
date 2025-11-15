@@ -24,6 +24,9 @@ from process_application import (
 # Import logging utilities
 from logging_utils import execution_logger, log_exception, log_summary
 
+# Import multiprocessing support
+from processing_pool import ProcessingPool
+
 # Load environment variables from .env file
 load_dotenv()
 
@@ -324,6 +327,29 @@ def process_single_application(
         }
 
 
+def _worker_process_application(args_tuple) -> dict:
+    """
+    Worker function for multiprocessing.
+
+    Must be at module level (not nested) to be picklable.
+    Accepts a tuple of arguments since multiprocessing map can only pass one argument per worker.
+
+    Args:
+        args_tuple: (folder_path, model_name, output_dir, scholarship_folder_name, verbose)
+
+    Returns:
+        Result dictionary from process_single_application
+    """
+    folder_path, model_name, output_dir, scholarship_folder_name, verbose = args_tuple
+    return process_single_application(
+        folder_path=folder_path,
+        model_name=model_name,
+        output_dir=output_dir,
+        scholarship_folder_name=scholarship_folder_name,
+        verbose=False  # Disable verbose in worker to avoid log spam
+    )
+
+
 def main():
     """Main function with command-line argument parsing."""
     parser = argparse.ArgumentParser(
@@ -394,7 +420,14 @@ Examples:
         action="store_true",
         help="Suppress verbose output (only show errors and summary)"
     )
-    
+
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=0,
+        help="Number of worker processes for parallel processing (default: 0 = sequential). Set to > 0 to enable multiprocessing. Text extraction is CPU-bound so use up to CPU count."
+    )
+
     args = parser.parse_args()
     
     # Get configuration from arguments or environment variables
@@ -499,28 +532,35 @@ Examples:
         print("=" * 60)
     
     # Process each application folder
-    results = []
-    successful = 0
-    failed = 0
-    
-    for i, app_folder in enumerate(application_folders, 1):
-        if verbose and len(application_folders) > 1:
-            print(f"\n[{i}/{len(application_folders)}] Processing: {app_folder}")
-        
-        folder_path = applications_path / app_folder
-        result = process_single_application(
-            folder_path=str(folder_path),
-            model_name=model_name,
-            output_dir=output_dir,
-            scholarship_folder_name=scholarship_folder_name,
-            verbose=verbose
+    if verbose and args.workers > 0:
+        print(f"\nUsing {args.workers} worker processes for parallel processing")
+        print(f"(Text extraction is CPU-bound)")
+
+    # Prepare arguments for each application folder
+    worker_args = [
+        (
+            str(applications_path / app_folder),
+            model_name,
+            output_dir,
+            scholarship_folder_name,
+            verbose
         )
-        
-        results.append(result)
-        if result["success"]:
-            successful += 1
-        else:
-            failed += 1
+        for app_folder in application_folders
+    ]
+
+    # Process using pool
+    with ProcessingPool(num_workers=args.workers, use_threading=False, verbose=verbose) as pool:
+        if verbose and len(application_folders) > 1:
+            print(f"Processing {len(application_folders)} applications...")
+        results = pool.map_unordered(
+            _worker_process_application,
+            worker_args,
+            show_progress=verbose
+        )
+
+    # Count results
+    successful = sum(1 for r in results if r.get("success", False))
+    failed = len(results) - successful
     
     # Print summary
     print("\n" + "=" * 60)
