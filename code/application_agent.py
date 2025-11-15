@@ -6,46 +6,25 @@ This agent extracts structured information from application forms, assesses comp
 and generates application profiles with scores.
 """
 
-import os
 import json
 from typing import Optional, Dict, List
-import ollama
+
+from base_agent import BaseAgent
 
 
-class ApplicationAgent:
+class ApplicationAgent(BaseAgent):
     """Agent that analyzes application forms and generates profiles using Ollama."""
-    
+
     def __init__(self, model_name: str = "llama3.2", ollama_host: Optional[str] = None):
         """
         Initialize the Application Agent with Ollama.
-        
+
         Args:
             model_name: Name of the Ollama model to use (e.g., "llama3.2", "mistral", "phi3")
                        Default: "llama3.2"
             ollama_host: Optional custom Ollama host URL (default: http://localhost:11434)
         """
-        self.model_name = model_name
-        self.ollama_host = ollama_host or os.getenv("OLLAMA_HOST", "http://localhost:11434")
-        
-        # Test connection to Ollama
-        try:
-            # Check if Ollama is running and model is available
-            models_response = ollama.list()
-            # ollama.list() returns a ListResponse object with a 'models' attribute
-            # Each model is a Model object with a 'model' attribute containing the name
-            model_list = models_response.models if hasattr(models_response, 'models') else []
-            model_names = [m.model for m in model_list if hasattr(m, 'model')]
-            if model_name not in model_names:
-                print(f"Warning: Model '{model_name}' not found locally.")
-                print(f"Available models: {', '.join(model_names) if model_names else 'None'}")
-                print(f"To download the model, run: ollama pull {model_name}")
-                print(f"Attempting to use '{model_name}' anyway (it will be downloaded if needed)...")
-        except Exception as e:
-            print(f"Warning: Could not connect to Ollama at {self.ollama_host}")
-            print(f"Error: {str(e)}")
-            print("Make sure Ollama is running. Start it with: ollama serve")
-            print("Or install Ollama from: https://ollama.com/download")
-            raise RuntimeError(f"Cannot connect to Ollama: {str(e)}")
+        super().__init__(model_name=model_name, ollama_host=ollama_host)
     
     def analyze_application(self, extracted_text: str, file_list: List[str], additional_criteria: Optional[str] = None) -> Dict:
         """
@@ -145,46 +124,24 @@ Based on the application form text and the list of files{', and the additional c
 Return ONLY valid JSON, no additional text or markdown formatting."""
 
         try:
-            # Call Ollama API
-            response = ollama.chat(
-                model=self.model_name,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                options={
-                    "temperature": 0.1,  # Lower temperature for more consistent JSON output
-                    "num_predict": 4096  # Maximum tokens to generate
-                }
+            # Use BaseAgent's retry-enabled chat method
+            response_text = self._chat_with_retry(
+                messages=[{"role": "user", "content": prompt}]
             )
-            
-            # Extract JSON from response
-            response_text = response['message']['content'].strip()
-            
-            # Remove markdown code blocks if present
-            if response_text.startswith("```json"):
-                response_text = response_text[7:]
-            if response_text.startswith("```"):
-                response_text = response_text[3:]
-            if response_text.endswith("```"):
-                response_text = response_text[:-3]
-            response_text = response_text.strip()
-            
+
             # Try to extract JSON if it's embedded in text
             # Look for JSON object boundaries
             start_idx = response_text.find('{')
             end_idx = response_text.rfind('}')
             if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
                 response_text = response_text[start_idx:end_idx + 1]
-            
-            # Parse JSON
-            result = json.loads(response_text)
+
+            # Use BaseAgent's JSON parsing method
+            result = self.parse_llm_response(response_text)
             return result
-            
-        except json.JSONDecodeError as e:
-            raise RuntimeError(f"Failed to parse JSON response from Ollama: {str(e)}\nResponse: {response_text[:500]}")
+
+        except ValueError as e:
+            raise RuntimeError(f"Failed to parse JSON response: {str(e)}")
         except Exception as e:
-            raise RuntimeError(f"Error calling Ollama API: {str(e)}")
+            raise RuntimeError(f"Error analyzing application: {str(e)}")
 

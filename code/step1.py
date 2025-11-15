@@ -169,8 +169,11 @@ def process_single_application(
         # Step 3: Extract text using docling
         if verbose:
             print("\n3. Extracting text from application form using docling...")
-        extractor = DoclingTextExtractor()
         try:
+            # Note: 'extractor' is created once per function call (reused for all files in this folder)
+            # to avoid expensive DocumentConverter re-initialization
+            if 'extractor' not in locals():
+                extractor = DoclingTextExtractor()
             extracted_text = extractor.extract_text(app_form_path)
             if verbose:
                 print(f"   Extracted {len(extracted_text)} characters of text")
@@ -184,13 +187,13 @@ def process_single_application(
                 "folder": application_folder,
                 "error": error_msg
             }
-        
+
         # Step 4: Process attachments
         if verbose:
             print("\n4. Processing attachments...")
         attachments = processor.get_attachments()
         classified_attachments = []
-        extractor = DoclingTextExtractor()
+        # Note: Reusing 'extractor' from Step 3 to avoid DocumentConverter re-initialization
         classifier = AttachmentClassifier(model_name=model_name)
         
         # Prepare output directory for text files

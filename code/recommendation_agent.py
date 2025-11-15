@@ -6,14 +6,14 @@ This agent extracts information from recommendation letters including recommende
 key strengths mentioned, and provides scores for recommendation strength and consistency.
 """
 
-import os
 import json
 from pathlib import Path
 from typing import Optional, Dict, List
-import ollama
+
+from base_agent import BaseAgent
 
 
-class RecommendationAgent:
+class RecommendationAgent(BaseAgent):
     """Agent that analyzes recommendation letters to build a recommendation profile."""
     
     def __init__(self, model_name: str = "llama3.2", ollama_host: Optional[str] = None):
@@ -24,8 +24,7 @@ class RecommendationAgent:
             model_name: Name of the Ollama model to use
             ollama_host: Optional custom Ollama host URL (default: http://localhost:11434)
         """
-        self.model_name = model_name
-        self.ollama_host = ollama_host or os.getenv("OLLAMA_HOST", "http://localhost:11434")
+        super().__init__(model_name=model_name, ollama_host=ollama_host)
     
     def analyze_recommendation_profile(
         self,
@@ -141,42 +140,22 @@ Based on the recommendation letters{', and the additional criteria provided abov
 Return ONLY valid JSON, no additional text or markdown formatting."""
 
         try:
-            response = ollama.chat(
-                model=self.model_name,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                options={
-                    "temperature": 0.2,
-                    "num_predict": 2048
-                }
+            response_text = self._chat_with_retry(
+                messages=[{"role": "user", "content": prompt}]
             )
-            
-            response_text = response['message']['content'].strip()
-            
-            # Remove markdown code blocks if present
-            if response_text.startswith("```json"):
-                response_text = response_text[7:]
-            if response_text.startswith("```"):
-                response_text = response_text[3:]
-            if response_text.endswith("```"):
-                response_text = response_text[:-3]
-            response_text = response_text.strip()
-            
+
             # Extract JSON
             start_idx = response_text.find('{')
             end_idx = response_text.rfind('}')
             if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
                 response_text = response_text[start_idx:end_idx + 1]
-            
-            result = json.loads(response_text)
+
+            # Use BaseAgent's JSON parsing method
+            result = self.parse_llm_response(response_text)
             return result
-            
-        except json.JSONDecodeError as e:
-            raise RuntimeError(f"Failed to parse JSON response from Ollama: {str(e)}\nResponse: {response_text[:500]}")
+
+        except ValueError as e:
+            raise RuntimeError(f"Failed to parse JSON response: {str(e)}")
         except Exception as e:
-            raise RuntimeError(f"Error calling Ollama API: {str(e)}")
+            raise RuntimeError(f"Error analyzing recommendation profile: {str(e)}")
 
