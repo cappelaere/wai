@@ -36,3 +36,5 @@ output/
 # Data dir
 data/
 
+logs/
+results/
