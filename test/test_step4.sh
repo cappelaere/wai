@@ -2,7 +2,7 @@
 # Test script to run Step 4 to combine reports and generate PDF
 
 # Change to project root directory (parent of test/)
-cd "$(dirname "$0")/.." || exit 1
+cd "$(dirname "$0")/.." || exit 1do phase 1
 
 # Activate virtual environment
 source venv/bin/activate

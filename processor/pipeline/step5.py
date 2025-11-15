@@ -44,7 +44,7 @@ else:
 load_dotenv()
 
 # Import logging utilities
-from logging_utils import execution_logger, log_exception, log_summary
+from processor.utils.logging_utils import execution_logger, log_exception, log_summary
 
 
 def load_template(template_path: Optional[Path] = None) -> str:

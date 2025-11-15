@@ -10,7 +10,7 @@ import json
 from pathlib import Path
 from typing import Optional, Dict, List
 
-from base_agent import BaseAgent
+from processor.agents.base_agent import BaseAgent
 
 
 class RecommendationAgent(BaseAgent):

@@ -128,30 +128,44 @@ Each agent uses Ollama locally to avoid API calls and costs. Model is configurab
 
 ## Key Files and Modules
 
-**Core Processing (`code/`)**
-- `step1.py` to `step5.py`: Main pipeline scripts
-- `process_application.py`: File processing, text extraction, attachment classification
-- `logging_utils.py`: Centralized logging and execution tracking
-- `generate_schemas.py`: Schema validation and generation
-- `generate_summary.py`: Summary report generation
+**Core Processing (`processor/`)**
+- `processor/pipeline/`: Main pipeline scripts (step1.py to step5.py)
+- `processor/agents/`: AI agents for analysis
+  - `application_agent.py`: Application metadata extraction
+  - `personal_agent.py`: Personal profile analysis
+  - `recommendation_agent.py`: Recommendation letter analysis
+  - `academic_agent.py`: Academic achievement extraction
+  - `social_agent.py`: Social media identification
+  - `base_agent.py`: Shared base class with Ollama integration
+- `processor/utils/`: Shared utilities
+  - `process_application.py`: File processing, text extraction, attachment classification
+  - `processing_pool.py`: Multiprocessing support for parallelization
+  - `logging_utils.py`: Centralized logging and execution tracking
+  - `error_handling.py`: Unified error handling (ErrorResult, SuccessResult)
+  - `generate_schemas.py`: Schema validation and generation
+  - `generate_summary.py`: Summary report generation
+- `processor/templates/`: Jinja2 templates for report generation
 
-**Agents (`code/`)**
-- `application_agent.py`: Application metadata extraction
-- `personal_agent.py`: Personal profile analysis
-- `recommendation_agent.py`: Recommendation letter analysis
-- `academic_agent.py`: Academic achievement extraction
-- `social_agent.py`: Social media identification
+**Copilot Module (`copilot/`)** - New module for intelligent assistance
+- `copilot/agents/`: Copilot-specific agents (ready for development)
+- `copilot/tools/`: Tools and utilities for copilot operations
+- `copilot/context/`: Session and context management
 
-**Utilities**
-- `code/templates/`: Jinja2 templates for report generation
-- `code/docs/`: Additional documentation
+**Entry Points**
+- `process_scholarships.py`: Unified orchestrator for running pipeline steps
+- Individual steps can be run from `processor/pipeline/`
 
 **Configuration**
 - `.env`: Environment variables (Ollama model, host, paths)
 - `.env.example`: Template for environment configuration
 
 **Test Scripts (`test/`)**
-- Shell scripts for testing each step with sample data
+- `test_orchestrator.sh`: Tests for the unified orchestrator
+- Individual test scripts for each step with sample data
+
+**Documentation**
+- `ARCHITECTURE.md`: Detailed architecture and project structure
+- `CLAUDE.md`: This file (guidance for Claude Code)
 
 ## Important Environment Variables
 

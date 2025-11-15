@@ -31,17 +31,17 @@ from pathlib import Path
 from typing import Optional, List, Dict, Any
 from dotenv import load_dotenv
 
-from application_agent import ApplicationAgent
-from personal_agent import PersonalAgent
-from recommendation_agent import RecommendationAgent
-from academic_agent import AcademicAgent
-from social_agent import SocialAgent
+from processor.agents.application_agent import ApplicationAgent
+from processor.agents.personal_agent import PersonalAgent
+from processor.agents.recommendation_agent import RecommendationAgent
+from processor.agents.academic_agent import AcademicAgent
+from processor.agents.social_agent import SocialAgent
 
 # Import logging utilities
-from logging_utils import execution_logger, log_exception, log_summary
+from processor.utils.logging_utils import execution_logger, log_exception, log_summary
 
 # Import multiprocessing support
-from processing_pool import ProcessingPool
+from processor.utils.processing_pool import ProcessingPool
 
 # Load environment variables from .env file
 load_dotenv()

@@ -9,7 +9,7 @@ and generates application profiles with scores.
 import json
 from typing import Optional, Dict, List
 
-from base_agent import BaseAgent
+from processor.agents.base_agent import BaseAgent
 
 
 class ApplicationAgent(BaseAgent):

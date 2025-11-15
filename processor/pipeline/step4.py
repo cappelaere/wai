@@ -21,12 +21,10 @@ from datetime import datetime
 from dotenv import load_dotenv
 
 # Import functions from step3 to generate individual reports
-# Add code directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent))
-from step3 import load_template, extract_report_data, generate_report
+from processor.pipeline.step3 import load_template, extract_report_data, generate_report
 
 # Import logging utilities
-from logging_utils import execution_logger, log_exception, log_summary
+from processor.utils.logging_utils import execution_logger, log_exception, log_summary
 
 # Load environment variables
 load_dotenv()

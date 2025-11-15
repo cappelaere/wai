@@ -21,7 +21,7 @@ from collections import defaultdict
 from dotenv import load_dotenv
 
 # Import logging utilities
-from logging_utils import execution_logger, log_exception, log_summary
+from processor.utils.logging_utils import execution_logger, log_exception, log_summary
 
 # Load environment variables
 load_dotenv()

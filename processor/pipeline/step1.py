@@ -15,17 +15,17 @@ from typing import Optional, List
 from dotenv import load_dotenv
 
 # Import processing classes
-from process_application import (
+from processor.utils.process_application import (
     ApplicationFileProcessor,
     DoclingTextExtractor,
     AttachmentClassifier
 )
 
 # Import logging utilities
-from logging_utils import execution_logger, log_exception, log_summary
+from processor.utils.logging_utils import execution_logger, log_exception, log_summary
 
 # Import multiprocessing support
-from processing_pool import ProcessingPool
+from processor.utils.processing_pool import ProcessingPool
 
 # Load environment variables from .env file
 load_dotenv()
