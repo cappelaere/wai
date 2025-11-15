@@ -84,19 +84,49 @@ deactivate
 
 ### Running the Application Processor
 
-The Step 1 script (`code/step1.py`) processes WAI scholarship application folders. It supports processing single or multiple applications with various options.
+#### Option 1: Using the Unified Orchestrator (Recommended)
 
-**Quick start:**
+The easiest way to run the complete pipeline (all steps) with unified arguments:
 
 ```bash
 # Always activate virtual environment first
 source venv/bin/activate
 
-# Process first 5 applications (for testing)
-python code/step1.py --scholarship-folder "data/2026/Delaney_Wings/Wings_for_Val_Delaney_Applications" --limit 5
+# Run all steps (1, 2, 3, 4) with default settings
+python process_scholarships.py --scholarship-folder "data/2026/Delaney_Wings"
+
+# Run with multiprocessing for better performance
+python process_scholarships.py --scholarship-folder "data/2026/Delaney_Wings" --workers 4
+
+# Run specific steps only
+python process_scholarships.py --scholarship-folder "data/2026/Delaney_Wings" --steps 1 2
+
+# Run with limit (for testing)
+python process_scholarships.py --scholarship-folder "data/2026/Delaney_Wings" --limit 5
 ```
 
-**For detailed usage instructions, see [USAGE.md](USAGE.md)**
+#### Option 2: Running Individual Steps
+
+For more control, you can run each step separately:
+
+```bash
+# Always activate virtual environment first
+source venv/bin/activate
+
+# Step 1: Process first 5 applications (for testing)
+python code/step1.py --scholarship-folder "data/2026/Delaney_Wings" --limit 5
+
+# Step 2: Generate profiles for all applications
+python code/step2.py --scholarship-folder "Delaney_Wings"
+
+# Step 3: Generate reports
+python code/step3.py --scholarship-folder "Delaney_Wings"
+
+# Step 4: Generate PDF
+python code/step4.py --scholarship-folder "Delaney_Wings"
+```
+
+**For detailed usage instructions, see [CLAUDE.md](CLAUDE.md)**
 
 ### Verifying Python Version
 

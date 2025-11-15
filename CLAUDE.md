@@ -24,25 +24,53 @@ ollama list
 
 ### Running the Pipeline
 
-The scholarship processing is divided into 5 sequential steps:
+#### Option 1: Using the Unified Orchestrator (Recommended)
+
+The easiest way to run the complete pipeline with unified arguments:
+
+```bash
+source venv/bin/activate
+
+# Run all steps (1, 2, 3, 4) with default settings
+python process_scholarships.py --scholarship-folder "data/2026/Delaney_Wings"
+
+# Run with multiprocessing (4 workers for steps 1 & 2)
+python process_scholarships.py --scholarship-folder "data/2026/Delaney_Wings" --workers 4
+
+# Run specific steps only (e.g., steps 1 and 2)
+python process_scholarships.py --scholarship-folder "data/2026/Delaney_Wings" --steps 1 2
+
+# Run with limit and custom options
+python process_scholarships.py --scholarship-folder "data/2026/Delaney_Wings" \
+  --limit 10 --workers 4 --steps 1 2 3 --quiet
+```
+
+**Key orchestrator features:**
+- Single entry point for all steps
+- Automatic output.log cleanup at start
+- Unified arguments for all steps
+- Selective step execution
+- Error handling (stops at first failure)
+- Progress tracking and timing
+
+#### Option 2: Running Individual Steps (Advanced)
+
+For more control, run each step separately:
 
 ```bash
 source venv/bin/activate
 
 # Step 1: Process applications and classify attachments
-python code/step1.py --scholarship-folder "data/2026/Delaney_Wings" --limit 5
+python code/step1.py --scholarship-folder "data/2026/Delaney_Wings" --limit 5 --workers 4
 
-# Step 2: Generate profiles using AI agents
-python code/step2.py --scholarship-folder "Delaney_Wings"
+# Step 2: Generate profiles using AI agents (Application, Personal, Recommendation, Academic, Social)
+python code/step2.py --scholarship-folder "Delaney_Wings" --workers 8
 
 # Step 3: Generate review board reports
 python code/step3.py --scholarship-folder "Delaney_Wings"
 
 # Step 4: Combine reports and generate PDF
 python code/step4.py --scholarship-folder "Delaney_Wings" --limit 10
-
-# Step 5: Generate scholarship statistics
-python code/step5.py --scholarship-folder "Delaney_Wings"
 ```
 
 ### Running Tests
