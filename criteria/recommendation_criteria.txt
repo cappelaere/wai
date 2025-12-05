@@ -1,0 +1,60 @@
+# Recommendation Profile Evaluation Criteria
+
+This file contains additional criteria that should be considered when evaluating recommendation letters for this scholarship.
+
+## Evaluation Focus Areas
+
+1. **Recommender Credibility and Relationship**
+   - Prioritize recommendations from flight school instructors, especially CFIs (Certified Flight Instructors)
+   - Value recommendations from aviation professionals (pilots, ATC, maintenance, etc.)
+   - Consider the duration and depth of the recommender's relationship with the applicant
+   - Assess the recommender's ability to evaluate the applicant's aviation skills and potential
+
+2. **Aviation-Specific Endorsements**
+   - Look for specific examples of the applicant's flying skills, safety awareness, and aviation knowledge
+   - Value recommendations that demonstrate the applicant's commitment to aviation excellence
+   - Consider endorsements related to the applicant's potential for success in aviation careers
+   - Assess mentions of the applicant's ability to handle challenges in aviation training
+
+3. **Character and Professional Qualities**
+   - Look for evidence of reliability, responsibility, and professionalism
+   - Value mentions of leadership, teamwork, and communication skills
+   - Consider endorsements of the applicant's work ethic and dedication
+   - Assess recommendations that highlight the applicant's ability to learn and adapt
+
+4. **Consistency and Depth**
+   - Value consistency in themes across multiple recommendations
+   - Look for specific examples and anecdotes rather than generic praise
+   - Consider the depth of knowledge the recommender demonstrates about the applicant
+   - Assess whether recommendations provide concrete evidence of the applicant's strengths
+
+## Scoring Guidelines
+
+- Average support strength should reflect both the positivity and specificity of endorsements
+- Consistency scores should reward alignment across multiple recommendations
+- Depth of endorsement should emphasize specific examples and detailed observations
+- Overall recommendation profile should consider both individual letter quality and aggregate strength
+
+## Scholarship-Specific Considerations
+
+### Recommender Preferences
+
+**Priority Order:**
+1. Flight school instructors (CFIs) - Highest priority
+2. Aviation industry professionals (commercial pilots, ATC, maintenance, etc.)
+3. Academic instructors with aviation focus
+4. Employers in aviation-related fields
+5. Other professional references
+
+**Key Factors:**
+- Recommendations from flight school instructors should be weighted more heavily
+- Look for specific mentions of the applicant's flying abilities, safety awareness, and progress
+- Value recommendations that demonstrate the instructor's direct observation of the applicant's aviation skills
+- Consider the instructor's experience and credentials when available
+
+### Additional Considerations
+
+- Recommendations should ideally come from individuals who have directly observed the applicant's aviation-related work or training
+- Generic recommendations or those that could apply to any applicant should be scored lower
+- Recommendations that specifically address the scholarship's goals and the applicant's alignment with WAI values should be prioritized
+

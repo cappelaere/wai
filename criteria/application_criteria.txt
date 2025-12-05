@@ -1,0 +1,92 @@
+# Application Profile Evaluation Criteria
+
+This file contains additional criteria that should be considered when evaluating application forms for this scholarship.
+
+## Evaluation Focus Areas
+
+1. **Application Completeness**
+   - Prioritize applications with all required fields filled out
+   - Value complete contact information (email, phone, address)
+   - Consider completeness of school information
+   - Assess whether all required attachments are present
+
+2. **WAI Membership Information**
+   - Verify WAI membership number is provided
+   - Check membership expiration date (should be current)
+   - Consider length of membership (longer membership may indicate commitment)
+   - Assess if membership information is complete and valid
+
+3. **Contact Information Quality**
+   - Ensure email addresses are valid format
+   - Verify phone numbers are complete
+   - Check that addresses are complete and properly formatted
+   - Consider if contact information appears current and accurate
+
+4. **School Information**
+   - Verify school name is provided and appears valid
+   - Check that school address is complete
+   - Assess if program information is provided
+   - Consider relevance of school/program to aviation
+
+5. **Supporting Documents**
+   - Verify presence of required documents (resume, essays, recommendations)
+   - Check that appropriate number of recommendation letters are provided
+   - Assess if medical certificates are present (if required)
+   - Consider if flight logbooks are provided (if applicable)
+
+## Scoring Guidelines
+
+- Completeness score should reflect both required fields and supporting documents
+- Profile information should be weighted based on importance (e.g., membership number is critical)
+- Contact information completeness is essential for communication
+- School information should be complete and relevant
+- Supporting documents should match scholarship requirements
+
+## Scholarship-Specific Considerations
+
+### Required Information Priority
+
+**Critical (Must Have):**
+- WAI membership number
+- Full name (first and last)
+- Valid email address
+- School name
+
+**Important (Should Have):**
+- Complete address information
+- Phone number
+- School address
+- Program information
+- Membership expiration date
+
+**Supporting (Nice to Have):**
+- Middle name
+- Work phone
+- Additional contact information
+
+### Document Requirements
+
+**Required Documents:**
+- Resume/CV
+- At least one essay or personal statement
+- Recommendation letters (check specific scholarship requirements for number)
+
+**Optional but Valued:**
+- Medical certificate (if pursuing flight training)
+- Flight logbook (if applicable)
+- Additional supporting materials
+
+### Quality Indicators
+
+- Applications with complete, well-formatted information score higher
+- Missing critical information should significantly reduce completeness score
+- Incomplete contact information may indicate lack of attention to detail
+- Applications with all required documents demonstrate thoroughness
+
+## Additional Notes
+
+- Applications with expired WAI memberships should be flagged
+- Incomplete school information may indicate the applicant is not currently enrolled
+- Missing required documents should be clearly noted in missing_items
+- Consider the overall professionalism and completeness of the application package
+
