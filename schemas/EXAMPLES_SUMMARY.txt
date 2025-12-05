@@ -1,0 +1,156 @@
+SCHEMA EXAMPLES SUMMARY
+======================
+
+This file provides a quick reference for all examples available in EXAMPLES.md
+
+1. PERSONAL AGENT SCHEMA (personal_agent_schema.json)
+   ================================================
+   Location: EXAMPLES.md - Lines 5-99
+   
+   Example 1: "Strong Aviation-Focused Applicant" (Lines 7-51)
+   - Character: Sarah (strong applicant)
+   - Overall Score: 88/100
+   - Key features: 3.8 GPA, private pilot license in progress, leadership roles
+   - Ideal for: Demonstrating excellent applicant profile
+   
+   Example 2: "Career-Changer with Emerging Aviation Interest" (Lines 53-99)
+   - Character: Michelle (transitioning to aviation)
+   - Overall Score: 78/100
+   - Key features: 3.2 GPA equivalent, newer to aviation, strong service orientation
+   - Ideal for: Showing evaluation of career-changers and less traditional paths
+
+2. ACADEMIC AGENT SCHEMA (academic_agent_schema.json)
+   ==================================================
+   Location: EXAMPLES.md - Lines 101-200
+   
+   Example 1: "High-Performing STEM Student" (Lines 103-150)
+   - Character: Jessica (strong STEM student)
+   - Overall Score: 92/100
+   - Key features: 3.85 GPA, Dean's List, aerospace specialization
+   - Ideal for: Demonstrating excellent academic profile
+   
+   Example 2: "Strong Student with Less Traditional Path" (Lines 152-200)
+   - Character: David (broad degree with aviation focus)
+   - Overall Score: 78/100
+   - Key features: 3.2 GPA overall, 3.7-3.8 in engineering, aviation coursework
+   - Ideal for: Showing evaluation of non-traditional but focused students
+
+3. RECOMMENDATION AGENT SCHEMA (recommendation_agent_schema.json)
+   =============================================================
+   Location: EXAMPLES.md - Lines 202-364
+   
+   Example 1: "Strong Consensus Endorsement" (Lines 204-287)
+   - Letters: 3 (instructor, employer, mentor)
+   - Overall Score: 93/100
+   - Key features: All very_positive tone, consistent themes, no concerns
+   - Ideal for: Demonstrating strong applicant with excellent recommendations
+   
+   Example 2: "Mixed Recommendations with Some Concerns" (Lines 289-364)
+   - Letters: 2 (instructor, employer)
+   - Overall Score: 71/100
+   - Key features: Generally positive but with growth areas, learning curve noted
+   - Ideal for: Showing evaluation of applicants with development needs
+
+4. ACADEMIC PERFORMANCE AGENT (Replaces Academic Agent in some contexts)
+   =====================================================================
+   Location: EXAMPLES.md - Lines 365-416
+   
+   Example 1: "Strong Student Interested in Professional Certifications" (Lines 367-416)
+   - Character: Elena (pilot with credentials)
+   - Overall Score: 88/100
+   - Key features: 3.6 GPA, Private Pilot License, pursuing Instrument Rating
+   - Ideal for: Demonstrating practical aviation credentials with academics
+
+5. SOCIAL AGENT SCHEMA (social_agent_schema.json)
+   ==============================================
+   Location: EXAMPLES.md - Lines 418-519
+   
+   Example 1: "Strong Professional and Social Presence" (Lines 420-467)
+   - Platforms: LinkedIn (strong), Instagram
+   - Overall Score: 79/100
+   - Key features: 2 active platforms, strong LinkedIn engagement
+   - Ideal for: Demonstrating good professional social presence
+   
+   Example 2: "Minimal Social Media Presence" (Lines 469-519)
+   - Platforms: None
+   - Overall Score: 15/100
+   - Key features: No platforms found, neutral/non-judgmental language
+   - Ideal for: Showing proper handling of applicants without social media
+
+6. APPLICATION AGENT SCHEMA (application_agent_schema.json)
+   =========================================================
+   Location: EXAMPLES.md - Lines 520-642
+   
+   Example 1: "Complete Application" (Lines 522-576)
+   - Applicant: Jennifer Martinez
+   - Overall Score: 95/100
+   - Completeness: 100/100
+   - Key features: All documents, both phones, WAI member
+   - Ideal for: Demonstrating perfect submission
+   
+   Example 2: "Partial Application with Missing Items" (Lines 578-642)
+   - Applicant: Michael Chen
+   - Overall Score: 62/100
+   - Completeness: 58/100
+   - Key features: Missing documents, incomplete info, not WAI member
+   - Ideal for: Showing proper scoring of incomplete submissions
+
+KEY CHARACTERISTICS
+===================
+
+Contrasting Examples (Good for showing range):
+- Personal Agent: Strong aviator vs. Career-changer
+- Academic Agent: High performer vs. Non-traditional path
+- Recommendation Agent: Consensus endorsement vs. Mixed with concerns
+- Social Agent: Strong presence vs. No presence
+- Application Agent: Complete vs. Incomplete
+
+Paired Examples (Show before/after or ideal/realistic):
+- All agents have Example 1 showing strong/ideal case
+- All agents have Example 2 showing realistic/challenging case
+
+Common Themes:
+- Aviation focus and commitment emphasized
+- Different paths to success (not just perfect credentials)
+- Clear scoring with detailed breakdowns
+- Balanced perspective on candidates' strengths and growth areas
+
+USAGE RECOMMENDATIONS
+====================
+
+1. Use Example 1 for:
+   - Standard prompt examples
+   - Showing ideal output format
+   - Training new team members
+   - Initial agent tuning
+
+2. Use Example 2 for:
+   - Edge case handling
+   - Showing how to evaluate difficult cases
+   - Demonstrating fairness in evaluation
+   - Reducing bias in scoring
+
+3. Consider both for:
+   - Comprehensive prompt engineering
+   - Testing parser reliability
+   - Performance benchmarking
+
+INTEGRATION NOTES
+=================
+
+All examples:
+- Are valid JSON following their respective schemas
+- Include all required fields
+- Demonstrate proper score ranges (0-100)
+- Show appropriate reasoning for scores
+- Are realistic (not extreme cases)
+- Can be used immediately in prompts
+
+Examples have been tested to:
+- Parse successfully with JSONParser
+- Validate against their schemas
+- Provide clear guidance to LLMs
+- Reduce parser failures
+
+For integration steps, see INTEGRATION_GUIDE.md
+For detailed examples, see EXAMPLES.md

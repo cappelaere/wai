@@ -24,7 +24,7 @@ class ApplicationAgent(BaseAgent):
                        Default: "llama3.2"
             ollama_host: Optional custom Ollama host URL (default: http://localhost:11434)
         """
-        super().__init__(model_name=model_name, ollama_host=ollama_host)
+        super().__init__(model_name=model_name, ollama_host=ollama_host, schema_name="application_agent_schema.json")
     
     def analyze_application(self, extracted_text: str, file_list: List[str], additional_criteria: Optional[str] = None) -> Dict:
         """
@@ -109,8 +109,8 @@ Based on the application form text and the list of files{', and the additional c
     }},
     "summary": "A 2-3 sentence summary of who this applicant is and what is in their application package",
     "scores": {{
-        "overall_score": 0-100,
-        "completeness_score": 0-100,
+        "overall_score": <integer 0-100, required>,
+        "completeness_score": <integer 0-100, required>,
         "score_breakdown": {{
             "profile_information": "score and reasoning",
             "contact_information": "score and reasoning",
@@ -121,23 +121,25 @@ Based on the application form text and the list of files{', and the additional c
     }}
 }}
 
-Return ONLY valid JSON, no additional text or markdown formatting."""
+CRITICAL JSON FORMAT REQUIREMENTS:
+- You MUST respond with ONLY valid JSON
+- Do NOT include markdown code blocks (```json or ```)
+- Do NOT include any text before or after the JSON
+- Do NOT include comments or explanations
+- Do NOT use trailing commas
+- Do NOT use single quotes (use double quotes only)
+- All scores must be integers between 0 and 100
+- The response must be parseable by json.loads() without any preprocessing"""
 
         try:
-            # Use BaseAgent's retry-enabled chat method
-            response_text = self._chat_with_retry(
-                messages=[{"role": "user", "content": prompt}]
-            )
+            # Prepare messages for potential retry
+            messages = [{"role": "user", "content": prompt}]
 
-            # Try to extract JSON if it's embedded in text
-            # Look for JSON object boundaries
-            start_idx = response_text.find('{')
-            end_idx = response_text.rfind('}')
-            if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
-                response_text = response_text[start_idx:end_idx + 1]
+            # Use BaseAgent's retry-enabled chat method with system message
+            response_text = self._chat_with_retry(messages, system_message=self.system_message)
 
-            # Use BaseAgent's JSON parsing method
-            result = self.parse_llm_response(response_text)
+            # Use BaseAgent's JSON parsing method (handles markdown extraction and retry)
+            result = self.parse_llm_response(response_text, filename="application_form", messages=messages)
             return result
 
         except ValueError as e:

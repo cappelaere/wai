@@ -1,0 +1,58 @@
+{
+  "profile": {
+    "wai_membership_number": null,
+    "wai_application_number": "DELANEY-2026-12346",
+    "first_name": "Michael",
+    "middle_name": null,
+    "last_name": "Chen",
+    "email": "mchen.aviation@email.com",
+    "membership_since": null,
+    "membership_expiration": null,
+    "home_address": {
+      "country": "United States",
+      "address_1": "567 Mountain Road",
+      "address_2": null,
+      "city": "Denver",
+      "state_province": "Colorado",
+      "zip_postal_code": "80202",
+      "home_phone": null,
+      "work_phone": "(303) 555-9876"
+    },
+    "school_information": {
+      "country": "United States",
+      "school_name": "University of Colorado Boulder",
+      "address_1": null,
+      "address_2": null,
+      "city": "Boulder",
+      "state_province": "Colorado",
+      "zip_postal_code": null
+    },
+    "completeness": {
+      "has_resume": true,
+      "has_essay": true,
+      "num_recommendation_letters": 2,
+      "has_medical_certificate": false,
+      "has_logbook": false,
+      "num_attachments": 3
+    }
+  },
+  "summary": "Michael Chen submitted an incomplete application for the Delaney Wings Scholarship. While he provided basic contact and school information, several items are missing. He is not currently a WAI member and did not provide complete school address information. His supporting documents are limited: 2 recommendation letters and no medical certificate or flight logbook.",
+  "scores": {
+    "overall_score": 62,
+    "completeness_score": 58,
+    "score_breakdown": {
+      "profile_information": "67 - Name and email present but no WAI membership number or middle name",
+      "contact_information": "75 - Home address present but missing home phone number; only work phone provided",
+      "school_information": "67 - School name and city provided but missing street address and zip code",
+      "supporting_documents": "50 - Missing medical certificate and flight logbook; only 2 recommendation letters instead of 3"
+    },
+    "missing_items": [
+      "WAI membership number",
+      "Medical certificate",
+      "Flight logbook",
+      "Complete school address (street address and zip code)",
+      "Home phone number",
+      "Third recommendation letter"
+    ]
+  }
+}

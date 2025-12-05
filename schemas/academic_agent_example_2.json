@@ -1,0 +1,43 @@
+{
+  "summary": "David is pursuing a degree in mechanical engineering with coursework in aviation applications. While his overall GPA is solid at 3.2, his performance in engineering courses has been consistently strong, particularly in courses directly related to aviation. His trajectory shows increasing focus on aviation-related studies as his degree progressed.",
+  "profile_features": {
+    "current_school_name": "Central State University",
+    "program": "Mechanical Engineering with Aviation Focus",
+    "education_level": "undergraduate",
+    "gpa": "3.2",
+    "academic_awards": [
+      "Engineering Department Scholarship",
+      "Aeronautics Club Award for Outstanding Contribution"
+    ],
+    "relevant_courses": [
+      "Aerospace Applications of Mechanical Engineering",
+      "Aircraft Maintenance and Systems",
+      "Flight Mechanics",
+      "Turbomachinery Fundamentals",
+      "Advanced Dynamics",
+      "Systems Engineering"
+    ],
+    "academic_trajectory": "Overall GPA of 3.2 with notably higher performance in engineering (3.7) and aviation-focused courses (3.8). Shows increasingly strong engagement with aviation specialization in final year.",
+    "strengths": [
+      "Strong performance in engineering and aviation-focused courses",
+      "Practical hands-on learning approach",
+      "Demonstrated specialization in aviation despite broader degree",
+      "Problem-solving skills applied to real aviation challenges"
+    ],
+    "areas_for_improvement": [
+      "Overall GPA could be higher through improved performance in non-core courses",
+      "Limited breadth of general education coursework"
+    ]
+  },
+  "scores": {
+    "academic_performance_score": 75,
+    "academic_relevance_score": 82,
+    "academic_readiness_score": 78,
+    "overall_score": 78
+  },
+  "score_breakdown": {
+    "academic_performance_score_reasoning": "3.2 overall GPA is solid, with notably strong performance (3.7-3.8) in engineering and aviation-specific courses indicating capability in relevant subject matter.",
+    "academic_relevance_score_reasoning": "While degree is broader mechanical engineering, significant coursework and demonstrated focus on aviation applications shows clear alignment with aviation career.",
+    "academic_readiness_score_reasoning": "Strong performance in relevant engineering and aviation courses indicates readiness for advanced technical studies and professional roles, despite broader degree."
+  }
+}

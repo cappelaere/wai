@@ -19,12 +19,12 @@ class SocialAgent(BaseAgent):
     def __init__(self, model_name: str = "llama3.2", ollama_host: Optional[str] = None):
         """
         Initialize the Social Agent with Ollama.
-        
+
         Args:
             model_name: Name of the Ollama model to use
             ollama_host: Optional custom Ollama host URL (default: http://localhost:11434)
         """
-        super().__init__(model_name=model_name, ollama_host=ollama_host)
+        super().__init__(model_name=model_name, ollama_host=ollama_host, schema_name="social_agent_schema.json")
     
     def analyze_social_presence(
         self,
@@ -53,7 +53,7 @@ class SocialAgent(BaseAgent):
         
         # Prepare resume text
         resume_text = ""
-        if resume and resume.get('extracted_text_file'):
+        if resume and isinstance(resume, dict) and resume.get('extracted_text_file'):
             try:
                 if text_files_base_path:
                     text_path = text_files_base_path / resume['extracted_text_file']
@@ -68,9 +68,16 @@ class SocialAgent(BaseAgent):
         
         # Prepare essay texts
         essay_texts = ""
+        # Ensure essays is a list
+        if not isinstance(essays, list):
+            essays = [essays] if essays else []
+
         if essays:
             essay_texts = "\n\nEssays:\n"
             for i, essay in enumerate(essays, 1):
+                # Ensure essay is a dict before calling .get()
+                if not isinstance(essay, dict):
+                    continue
                 if essay.get('extracted_text_file'):
                     try:
                         if text_files_base_path:
@@ -162,9 +169,9 @@ Based on the application materials{', and the additional criteria provided above
         "notes": "any additional notes about social media presence or lack thereof"
     }},
     "scores": {{
-        "social_presence_score": 0-100,
-        "professional_presence_score": 0-100,
-        "overall_score": 0-100
+        "social_presence_score": <integer 0-100, required>,
+        "professional_presence_score": <integer 0-100, required>,
+        "overall_score": <integer 0-100, required>
     }},
     "score_breakdown": {{
         "social_presence_score_reasoning": "Explanation of social presence score (based on number of platforms found)",
@@ -173,21 +180,37 @@ Based on the application materials{', and the additional criteria provided above
     }}
 }}
 
-Return ONLY valid JSON, no additional text or markdown formatting."""
+CRITICAL JSON FORMAT REQUIREMENTS:
+- You MUST respond with ONLY valid JSON
+- Do NOT include markdown code blocks (```json or ```)
+- Do NOT include any text before or after the JSON
+- Do NOT include comments or explanations
+- Do NOT use trailing commas
+- Do NOT use single quotes (use double quotes only)
+- All scores must be integers between 0 and 100
+- The response must be parseable by json.loads() without any preprocessing"""
 
         try:
-            response_text = self._chat_with_retry(
-                messages=[{"role": "user", "content": prompt}]
-            )
+            # Build full file path for debugging (use absolute paths)
+            file_paths = []
+            if essays:
+                for essay in essays:
+                    if isinstance(essay, dict) and text_files_base_path and essay.get('extracted_text_file'):
+                        file_path = text_files_base_path / essay['extracted_text_file']
+                        file_paths.append(str(file_path.resolve() if hasattr(file_path, 'resolve') else file_path.absolute()))
+            if resume and isinstance(resume, dict) and text_files_base_path and resume.get('extracted_text_file'):
+                file_path = text_files_base_path / resume['extracted_text_file']
+                file_paths.append(str(file_path.resolve() if hasattr(file_path, 'resolve') else file_path.absolute()))
 
-            # Extract JSON
-            start_idx = response_text.find('{')
-            end_idx = response_text.rfind('}')
-            if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
-                response_text = response_text[start_idx:end_idx + 1]
+            full_filename = " | ".join(file_paths) if file_paths else (applicant_name if applicant_name else "unknown")
 
-            # Use BaseAgent's JSON parsing method
-            result = self.parse_llm_response(response_text)
+            # Prepare messages for potential retry
+            messages = [{"role": "user", "content": prompt}]
+
+            response_text = self._chat_with_retry(messages, system_message=self.system_message)
+
+            # Use BaseAgent's JSON parsing method (handles markdown extraction and retry)
+            result = self.parse_llm_response(response_text, filename=full_filename, messages=messages)
             return result
 
         except ValueError as e:

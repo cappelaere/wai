@@ -19,12 +19,12 @@ class AcademicAgent(BaseAgent):
     def __init__(self, model_name: str = "llama3.2", ollama_host: Optional[str] = None):
         """
         Initialize the Academic Agent with Ollama.
-        
+
         Args:
             model_name: Name of the Ollama model to use
             ollama_host: Optional custom Ollama host URL (default: http://localhost:11434)
         """
-        super().__init__(model_name=model_name, ollama_host=ollama_host)
+        super().__init__(model_name=model_name, ollama_host=ollama_host, schema_name="academic_agent_schema.json")
     
     def analyze_academic_profile(
         self,
@@ -65,7 +65,7 @@ class AcademicAgent(BaseAgent):
         
         # Prepare resume education section
         resume_education = ""
-        if resume and resume.get('extracted_text_file'):
+        if resume and isinstance(resume, dict) and resume.get('extracted_text_file'):
             try:
                 if text_files_base_path:
                     text_path = text_files_base_path / resume['extracted_text_file']
@@ -149,10 +149,10 @@ Based on the academic information provided{', and the additional criteria provid
         "areas_for_improvement": ["any areas for improvement noted, or empty array if none"]
     }},
     "scores": {{
-        "academic_performance_score": 0-100,
-        "academic_relevance_score": 0-100,
-        "academic_readiness_score": 0-100,
-        "overall_score": 0-100
+        "academic_performance_score": <integer 0-100, required>,
+        "academic_relevance_score": <integer 0-100, required>,
+        "academic_readiness_score": <integer 0-100, required>,
+        "overall_score": <integer 0-100, required>
     }},
     "score_breakdown": {{
         "academic_performance_score_reasoning": "Explanation of academic performance score",
@@ -161,21 +161,32 @@ Based on the academic information provided{', and the additional criteria provid
     }}
 }}
 
-Return ONLY valid JSON, no additional text or markdown formatting."""
+CRITICAL JSON FORMAT REQUIREMENTS:
+- You MUST respond with ONLY valid JSON
+- Do NOT include markdown code blocks (```json or ```)
+- Do NOT include any text before or after the JSON
+- Do NOT include comments or explanations
+- Do NOT use trailing commas
+- Do NOT use single quotes (use double quotes only)
+- All scores must be integers between 0 and 100
+- The response must be parseable by json.loads() without any preprocessing"""
 
         try:
-            response_text = self._chat_with_retry(
-                messages=[{"role": "user", "content": prompt}]
-            )
+            # Build full file path for debugging (use absolute paths)
+            full_filename = "unknown"
+            if resume and isinstance(resume, dict) and text_files_base_path and resume.get('extracted_text_file'):
+                file_path = text_files_base_path / resume['extracted_text_file']
+                full_filename = str(file_path.resolve() if hasattr(file_path, 'resolve') else file_path.absolute())
+            elif resume and isinstance(resume, dict) and resume.get('filename'):
+                full_filename = resume.get('filename')
 
-            # Extract JSON
-            start_idx = response_text.find('{')
-            end_idx = response_text.rfind('}')
-            if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
-                response_text = response_text[start_idx:end_idx + 1]
+            # Prepare messages for potential retry
+            messages = [{"role": "user", "content": prompt}]
 
-            # Use BaseAgent's JSON parsing method
-            result = self.parse_llm_response(response_text)
+            response_text = self._chat_with_retry(messages, system_message=self.system_message)
+
+            # Use BaseAgent's JSON parsing method (handles markdown extraction and retry)
+            result = self.parse_llm_response(response_text, filename=full_filename, messages=messages)
             return result
 
         except ValueError as e:

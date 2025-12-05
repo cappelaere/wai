@@ -1,0 +1,51 @@
+{
+  "profile": {
+    "wai_membership_number": "WAI-2024-45321",
+    "wai_application_number": "DELANEY-2026-12345",
+    "first_name": "Jennifer",
+    "middle_name": "Marie",
+    "last_name": "Martinez",
+    "email": "j.martinez@email.com",
+    "membership_since": "2023-06-15",
+    "membership_expiration": "2025-06-14",
+    "home_address": {
+      "country": "United States",
+      "address_1": "1234 Aviation Lane",
+      "address_2": "Apt 5B",
+      "city": "Phoenix",
+      "state_province": "Arizona",
+      "zip_postal_code": "85001",
+      "home_phone": "(602) 555-0123",
+      "work_phone": "(602) 555-0124"
+    },
+    "school_information": {
+      "country": "United States",
+      "school_name": "Arizona State University",
+      "address_1": "101 University Way",
+      "address_2": null,
+      "city": "Tempe",
+      "state_province": "Arizona",
+      "zip_postal_code": "85281"
+    },
+    "completeness": {
+      "has_resume": true,
+      "has_essay": true,
+      "num_recommendation_letters": 3,
+      "has_medical_certificate": true,
+      "has_logbook": true,
+      "num_attachments": 6
+    }
+  },
+  "summary": "Jennifer Martinez is a complete applicant for the Delaney Wings Scholarship with all required materials submitted. Current WAI member since 2023, she provides comprehensive contact information and clear school affiliation with Arizona State University. Her submission includes resume, essay, three strong recommendation letters, medical certificate, and flight logbook, indicating serious engagement with aviation and thorough preparation.",
+  "scores": {
+    "overall_score": 95,
+    "completeness_score": 100,
+    "score_breakdown": {
+      "profile_information": "100 - Complete name, email, and contact numbers provided",
+      "contact_information": "100 - Full home address with both phone numbers present",
+      "school_information": "100 - School name, city, state, and zip code all provided",
+      "supporting_documents": "100 - All required documents submitted (resume, essay, 3 recommendations, medical cert, logbook)"
+    },
+    "missing_items": []
+  }
+}

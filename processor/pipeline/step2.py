@@ -27,9 +27,15 @@ import os
 import sys
 import json
 import argparse
+import time
 from pathlib import Path
 from typing import Optional, List, Dict, Any
 from dotenv import load_dotenv
+
+# Add project root to Python path to allow imports
+project_root = Path(__file__).parent.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 from processor.agents.application_agent import ApplicationAgent
 from processor.agents.personal_agent import PersonalAgent
@@ -270,6 +276,9 @@ def process_single_application_step2(
     output_path = Path(output_folder)
     application_folder = output_path.name
     
+    # Start overall timing
+    overall_start_time = time.time()
+    
     if verbose:
         print(f"\n{'='*60}")
         print(f"Processing Step 2 for: {application_folder}")
@@ -310,6 +319,7 @@ def process_single_application_step2(
             }
         
         # Load Step 1 results
+        step_start = time.time()
         if verbose:
             print("\n1. Loading Step 1 results...")
         
@@ -347,31 +357,51 @@ def process_single_application_step2(
         
         classified_attachments = attachments_data.get('attachments', [])
         
+        step_elapsed = time.time() - step_start
         if verbose:
             print(f"   Loaded application form data, text ({len(extracted_text)} chars), and {len(classified_attachments)} attachments")
+            print(f"   [TIMING] Step 1 (Loading): {step_elapsed:.2f}s")
         
         # Step 2: Generate Application Profile
+        step_start = time.time()
         if verbose:
             print("\n2. Generating Application Profile...")
-        
+
+        # Initialize application_profile_file before try block
+        application_profile_file = output_path / "application_profile.json"
+
         try:
+            agent_start = time.time()
             application_agent = ApplicationAgent(model_name=model_name)
+            agent_init_time = time.time() - agent_start
+            if verbose:
+                print(f"   [DEBUG] ApplicationAgent initialization: {agent_init_time:.2f}s")
+            
+            analyze_start = time.time()
             application_profile = application_agent.analyze_application(
-                extracted_text, 
-                file_list, 
+                extracted_text,
+                file_list,
                 additional_criteria=application_criteria
             )
-            
+            analyze_time = time.time() - analyze_start
+            if verbose:
+                print(f"   [DEBUG] analyze_application() call: {analyze_time:.2f}s")
+
             # Save application profile
-            application_profile_file = output_path / "application_profile.json"
+            save_start = time.time()
             with open(application_profile_file, 'w') as f:
                 json.dump(application_profile, f, indent=2)
-            
+            save_time = time.time() - save_start
             if verbose:
-                overall_score = application_profile.get('scores', {}).get('overall_score', 
+                print(f"   [DEBUG] Saving application_profile.json: {save_time:.2f}s")
+
+            step_elapsed = time.time() - step_start
+            if verbose:
+                overall_score = application_profile.get('scores', {}).get('overall_score',
                     application_profile.get('score', {}).get('completeness_score', 'N/A'))  # Backward compatibility
                 print(f"   Application profile generated (overall score: {overall_score})")
                 print(f"   Saved to: {application_profile_file.name}")
+                print(f"   [TIMING] Step 2 (Application Profile): {step_elapsed:.2f}s")
         except Exception as e:
             error_msg = f"Warning: Failed to generate application profile: {str(e)}"
             if verbose:
@@ -384,6 +414,7 @@ def process_single_application_step2(
             }
         
         # Step 3: Generate Personal Profile
+        step_start = time.time()
         if verbose:
             print("\n3. Generating Personal Profile...")
         
@@ -396,7 +427,13 @@ def process_single_application_step2(
         
         # Only process if we have essays or resume
         if essays or resume:
+            agent_start = time.time()
             personal_agent = PersonalAgent(model_name=model_name)
+            agent_init_time = time.time() - agent_start
+            if verbose:
+                print(f"   [DEBUG] PersonalAgent initialization: {agent_init_time:.2f}s")
+            
+            analyze_start = time.time()
             personal_profile = personal_agent.analyze_personal_profile(
                 essays=essays,
                 resume=resume,
@@ -404,8 +441,9 @@ def process_single_application_step2(
                 text_files_base_path=output_path,
                 additional_criteria=additional_criteria
             )
-            
+            analyze_time = time.time() - analyze_start
             if verbose:
+                print(f"   [DEBUG] analyze_personal_profile() call: {analyze_time:.2f}s")
                 overall_score = personal_profile.get('scores', {}).get('overall_score', 'N/A')
                 print(f"   Personal profile generated (overall score: {overall_score})")
         else:
@@ -424,14 +462,21 @@ def process_single_application_step2(
             }
         
         # Save personal profile
+        save_start = time.time()
         personal_profile_file = output_path / "personal_profile.json"
         with open(personal_profile_file, 'w') as f:
             json.dump(personal_profile, f, indent=2)
-        
+        save_time = time.time() - save_start
         if verbose:
             print(f"\n   Personal profile saved to: {personal_profile_file}")
+            print(f"   [DEBUG] Saving personal_profile.json: {save_time:.2f}s")
+        
+        step_elapsed = time.time() - step_start
+        if verbose:
+            print(f"   [TIMING] Step 3 (Personal Profile): {step_elapsed:.2f}s")
         
         # Step 4: Generate Recommendation Profile
+        step_start = time.time()
         if verbose:
             print("\n4. Generating Recommendation Profile...")
         
@@ -443,15 +488,22 @@ def process_single_application_step2(
         
         # Only process if we have recommendations
         if recommendations:
+            agent_start = time.time()
             recommendation_agent = RecommendationAgent(model_name=model_name)
+            agent_init_time = time.time() - agent_start
+            if verbose:
+                print(f"   [DEBUG] RecommendationAgent initialization: {agent_init_time:.2f}s")
+            
+            analyze_start = time.time()
             recommendation_profile = recommendation_agent.analyze_recommendation_profile(
                 recommendations=recommendations,
                 application_profile=application_profile,
                 text_files_base_path=output_path,
                 additional_criteria=recommendation_criteria
             )
-            
+            analyze_time = time.time() - analyze_start
             if verbose:
+                print(f"   [DEBUG] analyze_recommendation_profile() call: {analyze_time:.2f}s")
                 overall_score = recommendation_profile.get('scores', {}).get('overall_score', 'N/A')
                 print(f"   Recommendation profile generated (overall score: {overall_score})")
         else:
@@ -470,14 +522,21 @@ def process_single_application_step2(
             }
         
         # Save recommendation profile
+        save_start = time.time()
         recommendation_profile_file = output_path / "recommendation_profile.json"
         with open(recommendation_profile_file, 'w') as f:
             json.dump(recommendation_profile, f, indent=2)
-        
+        save_time = time.time() - save_start
         if verbose:
             print(f"\n   Recommendation profile saved to: {recommendation_profile_file}")
+            print(f"   [DEBUG] Saving recommendation_profile.json: {save_time:.2f}s")
+        
+        step_elapsed = time.time() - step_start
+        if verbose:
+            print(f"   [TIMING] Step 4 (Recommendation Profile): {step_elapsed:.2f}s")
         
         # Step 5: Generate Academic Profile
+        step_start = time.time()
         if verbose:
             print("\n5. Generating Academic Profile...")
         
@@ -502,7 +561,13 @@ def process_single_application_step2(
         
         # Process academic profile (always try, even without attachments, as resume and application form have info)
         try:
+            agent_start = time.time()
             academic_agent = AcademicAgent(model_name=model_name)
+            agent_init_time = time.time() - agent_start
+            if verbose:
+                print(f"   [DEBUG] AcademicAgent initialization: {agent_init_time:.2f}s")
+            
+            analyze_start = time.time()
             academic_profile = academic_agent.analyze_academic_profile(
                 resume=resume,
                 academic_attachments=academic_attachments,
@@ -510,8 +575,9 @@ def process_single_application_step2(
                 text_files_base_path=output_path,
                 additional_criteria=academic_criteria
             )
-            
+            analyze_time = time.time() - analyze_start
             if verbose:
+                print(f"   [DEBUG] analyze_academic_profile() call: {analyze_time:.2f}s")
                 overall_score = academic_profile.get('scores', {}).get('overall_score', 'N/A')
                 print(f"   Academic profile generated (overall score: {overall_score})")
         except Exception as e:
@@ -527,14 +593,21 @@ def process_single_application_step2(
             }
         
         # Save academic profile
+        save_start = time.time()
         academic_profile_file = output_path / "academic_profile.json"
         with open(academic_profile_file, 'w') as f:
             json.dump(academic_profile, f, indent=2)
-        
+        save_time = time.time() - save_start
         if verbose:
             print(f"\n   Academic profile saved to: {academic_profile_file}")
+            print(f"   [DEBUG] Saving academic_profile.json: {save_time:.2f}s")
+        
+        step_elapsed = time.time() - step_start
+        if verbose:
+            print(f"   [TIMING] Step 5 (Academic Profile): {step_elapsed:.2f}s")
         
         # Step 6: Generate Social Presence Profile
+        step_start = time.time()
         if verbose:
             print("\n6. Generating Social Presence Profile...")
         
@@ -547,7 +620,13 @@ def process_single_application_step2(
         
         # Process social profile (always try, even without attachments, as application form may have info)
         try:
+            agent_start = time.time()
             social_agent = SocialAgent(model_name=model_name)
+            agent_init_time = time.time() - agent_start
+            if verbose:
+                print(f"   [DEBUG] SocialAgent initialization: {agent_init_time:.2f}s")
+            
+            analyze_start = time.time()
             social_profile = social_agent.analyze_social_presence(
                 resume=resume,
                 essays=essays,
@@ -555,8 +634,9 @@ def process_single_application_step2(
                 text_files_base_path=output_path,
                 additional_criteria=social_criteria
             )
-            
+            analyze_time = time.time() - analyze_start
             if verbose:
+                print(f"   [DEBUG] analyze_social_presence() call: {analyze_time:.2f}s")
                 overall_score = social_profile.get('scores', {}).get('overall_score', 'N/A')
                 platforms_found = social_profile.get('profile_features', {}).get('total_platforms', 0)
                 print(f"   Social profile generated (overall score: {overall_score}, platforms found: {platforms_found})")
@@ -573,12 +653,18 @@ def process_single_application_step2(
             }
         
         # Save social profile
+        save_start = time.time()
         social_profile_file = output_path / "social_profile.json"
         with open(social_profile_file, 'w') as f:
             json.dump(social_profile, f, indent=2)
-        
+        save_time = time.time() - save_start
         if verbose:
             print(f"\n   Social profile saved to: {social_profile_file}")
+            print(f"   [DEBUG] Saving social_profile.json: {save_time:.2f}s")
+        
+        step_elapsed = time.time() - step_start
+        if verbose:
+            print(f"   [TIMING] Step 6 (Social Profile): {step_elapsed:.2f}s")
         
         # Calculate total score summary
         scores = {
@@ -624,12 +710,21 @@ def process_single_application_step2(
         application_profile['social_profile'] = social_profile
         application_profile['total_score_summary'] = total_score_summary
         
+        save_start = time.time()
         with open(application_profile_file, 'w') as f:
             json.dump(application_profile, f, indent=2)
-        
+        save_time = time.time() - save_start
         if verbose:
             print(f"   Updated application_profile.json with all profiles (application, personal, recommendation, academic, social)")
             print(f"   Total score summary: {total_score_summary['total_score']}/{max_possible_score} ({total_score_summary['percentage']}%)")
+            print(f"   [DEBUG] Saving updated application_profile.json: {save_time:.2f}s")
+        
+        # Overall timing summary
+        overall_elapsed = time.time() - overall_start_time
+        if verbose:
+            print(f"\n{'='*60}")
+            print(f"[TIMING] Total processing time for {application_folder}: {overall_elapsed:.2f}s ({overall_elapsed/60:.2f} minutes)")
+            print(f"{'='*60}")
         
         # Extract scholarship folder name from path
         # Path structure: {OUTPUT_DATA_DIR}/{scholarship_folder}/{application_folder}
@@ -774,6 +869,9 @@ Examples:
     )
 
     args = parser.parse_args()
+    
+    # Start timing for total processing time
+    main_start_time = time.time()
     
     # Get configuration from arguments or environment variables
     # Use OUTPUT_DATA_DIR from environment
@@ -968,18 +1066,38 @@ Examples:
             for app_folder in application_folders
         ]
 
-        # Process using pool (use threading for I/O-bound Ollama API calls)
-        if verbose and args.workers > 0:
-            print(f"\n  Using {args.workers} worker threads for parallel processing")
-
-        with ProcessingPool(num_workers=args.workers, use_threading=True, verbose=verbose) as pool:
+        # Process using pool (use threading for I/O-bound Ollama API calls) or sequentially
+        if args.workers > 0:
+            if verbose:
+                print(f"\n  Using {args.workers} worker threads for parallel processing")
+            
+            with ProcessingPool(num_workers=args.workers, use_threading=True, verbose=verbose) as pool:
+                if verbose and len(application_folders) > 1:
+                    print(f"  Processing {len(application_folders)} applications...")
+                results = pool.map_unordered(
+                    _worker_process_application_step2,
+                    worker_args,
+                    show_progress=verbose
+                )
+        else:
+            # Sequential processing with full verbose output
             if verbose and len(application_folders) > 1:
-                print(f"  Processing {len(application_folders)} applications...")
-            results = pool.map_unordered(
-                _worker_process_application_step2,
-                worker_args,
-                show_progress=verbose
-            )
+                print(f"\n  Processing {len(application_folders)} applications sequentially (with debug output)...")
+            results = []
+            for i, worker_arg in enumerate(worker_args, 1):
+                if verbose and len(application_folders) > 1:
+                    print(f"\n  [{i}/{len(application_folders)}] Processing application...")
+                result = process_single_application_step2(
+                    output_folder=worker_arg[0],
+                    model_name=worker_arg[1],
+                    verbose=verbose,  # Pass verbose flag through for debug output
+                    additional_criteria=worker_arg[2],
+                    recommendation_criteria=worker_arg[3],
+                    application_criteria=worker_arg[4],
+                    academic_criteria=worker_arg[5],
+                    social_criteria=worker_arg[6]
+                )
+                results.append(result)
 
         # Consolidate results
         all_results.extend(results)
@@ -991,6 +1109,9 @@ Examples:
                 if not result.get("success", False):
                     print(f"  ERROR: {result.get('error', 'Unknown error')}")
     
+    # Calculate total processing time
+    total_elapsed_time = time.time() - main_start_time
+    
     # Print final summary
     if verbose:
         print("\n" + "=" * 60)
@@ -999,6 +1120,10 @@ Examples:
         print(f"Total processed: {len(all_results)}")
         print(f"Successful: {total_successful}")
         print(f"Failed: {total_failed}")
+        print(f"Total processing time: {total_elapsed_time:.2f}s ({total_elapsed_time/60:.2f} minutes)")
+        if len(all_results) > 0:
+            avg_time = total_elapsed_time / len(all_results)
+            print(f"Average time per application: {avg_time:.2f}s ({avg_time/60:.2f} minutes)")
         
         if total_failed > 0:
             print("\nFailed applications:")
@@ -1011,8 +1136,12 @@ Examples:
     summary = {
         "total_processed": len(all_results),
         "successful": total_successful,
-        "failed": total_failed
+        "failed": total_failed,
+        "total_processing_time_seconds": round(total_elapsed_time, 2),
+        "total_processing_time_minutes": round(total_elapsed_time / 60, 2)
     }
+    if len(all_results) > 0:
+        summary["average_time_per_application_seconds"] = round(total_elapsed_time / len(all_results), 2)
     if total_failed > 0:
         failed_folders = [r.get('folder', 'Unknown') for r in all_results if not r["success"]]
         summary["failed_folders"] = failed_folders

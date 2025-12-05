@@ -15,10 +15,16 @@ import sys
 import json
 import csv
 import argparse
+import time
 from pathlib import Path
 from typing import Optional, Dict, Any
 from collections import defaultdict
 from dotenv import load_dotenv
+
+# Ensure project root is on sys.path so `processor` package can be imported
+project_root = Path(__file__).parent.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 # Import logging utilities
 from processor.utils.logging_utils import execution_logger, log_exception, log_summary
@@ -41,16 +47,25 @@ def load_template(template_path: Optional[Path] = None) -> str:
         with open(template_path, 'r', encoding='utf-8') as f:
             return f.read()
     
-    # Default template location: code/templates/review_report_template.md
-    default_template_path = Path(__file__).parent / "templates" / "review_report_template.md"
-    if default_template_path.exists():
-        with open(default_template_path, 'r', encoding='utf-8') as f:
-            return f.read()
+    # Look for default template in multiple possible locations
+    search_paths = [
+        # New location: alongside pipeline step files
+        Path(__file__).parent / "templates" / "review_report_template.md",
+        # Legacy/location: top-level processor/templates
+        Path(__file__).parent.parent / "templates" / "review_report_template.md",
+    ]
+    
+    for default_template_path in search_paths:
+        if default_template_path.exists():
+            with open(default_template_path, 'r', encoding='utf-8') as f:
+                return f.read()
     
     # Fallback: return error message as template if default template not found
-    return """# Error: Template Not Found
+    search_paths_str = "\n".join(str(p) for p in search_paths)
+    return f"""# Error: Template Not Found
 
-The default template file could not be found at: code/templates/review_report_template.md
+The default template file could not be found in any of these locations:
+{search_paths_str}
 
 Please specify a template file using --template option.
 """
@@ -512,6 +527,9 @@ Examples:
     
     args = parser.parse_args()
     
+    # Start timing for total processing time
+    main_start_time = time.time()
+    
     # Get output directory
     if args.output_dir:
         output_dir = Path(args.output_dir)
@@ -785,6 +803,9 @@ Examples:
                 if verbose:
                     print(f"    ERROR: {result.get('error', 'Unknown error')}")
     
+    # Calculate total processing time
+    total_elapsed_time = time.time() - main_start_time
+    
     # Print final summary
     if verbose:
         print("\n" + "=" * 60)
@@ -793,6 +814,10 @@ Examples:
         print(f"Total processed: {len(all_results)}")
         print(f"Successful: {total_successful}")
         print(f"Failed: {total_failed}")
+        print(f"Total processing time: {total_elapsed_time:.2f}s ({total_elapsed_time/60:.2f} minutes)")
+        if len(all_results) > 0:
+            avg_time = total_elapsed_time / len(all_results)
+            print(f"Average time per application: {avg_time:.2f}s ({avg_time/60:.2f} minutes)")
         
         if total_failed > 0:
             print("\nFailed applications:")
@@ -805,8 +830,12 @@ Examples:
     summary = {
         "total_processed": len(all_results),
         "successful": total_successful,
-        "failed": total_failed
+        "failed": total_failed,
+        "total_processing_time_seconds": round(total_elapsed_time, 2),
+        "total_processing_time_minutes": round(total_elapsed_time / 60, 2)
     }
+    if len(all_results) > 0:
+        summary["average_time_per_application_seconds"] = round(total_elapsed_time / len(all_results), 2)
     if total_failed > 0:
         failed_folders = [r.get('folder', 'Unknown') for r in all_results if not r["success"]]
         summary["failed_folders"] = failed_folders

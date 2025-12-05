@@ -1,0 +1,44 @@
+{
+  "summary": "The applicant has minimal presence on social media platforms. While no social media profiles were identified in application materials, this does not necessarily reflect lack of engagement, as not all applicants maintain active social media presence.",
+  "profile_features": {
+    "platforms_found": {
+      "facebook": {
+        "present": false,
+        "link": null,
+        "handle": null,
+        "evidence": "No Facebook profile or reference mentioned in application materials"
+      },
+      "instagram": {
+        "present": false,
+        "link": null,
+        "handle": null,
+        "evidence": "No Instagram handle or profile link provided"
+      },
+      "tiktok": {
+        "present": false,
+        "link": null,
+        "handle": null,
+        "evidence": "No TikTok presence indicated"
+      },
+      "linkedin": {
+        "present": false,
+        "link": null,
+        "handle": null,
+        "evidence": "No LinkedIn profile referenced in resume or application materials"
+      }
+    },
+    "total_platforms": 0,
+    "has_professional_presence": false,
+    "notes": "Applicant does not maintain visible social media presence. This may reflect preference for privacy or limited engagement with social media. Does not necessarily indicate lack of professional networking; applicant may network through other channels."
+  },
+  "scores": {
+    "social_presence_score": 0,
+    "professional_presence_score": 0,
+    "overall_score": 15
+  },
+  "score_breakdown": {
+    "social_presence_score_reasoning": "No social media platforms identified. Without social media profiles, baseline score reflects absence of measured presence.",
+    "professional_presence_score_reasoning": "No LinkedIn or other professional social media presence identified. Applicant may utilize other professional networking methods not captured in application materials.",
+    "overall_score_reasoning": "Limited social media presence may indicate preference for privacy or alternative networking approaches. Score reflects verifiable absence rather than indication of professional capability."
+  }
+}

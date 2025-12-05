@@ -16,14 +16,7 @@
             "type": "object",
             "properties": {
               "recommender_role": {
-                "type": "string",
-                "enum": [
-                  "instructor",
-                  "employer",
-                  "mentor",
-                  "colleague",
-                  "other"
-                ]
+                "type": "string"
               },
               "relationship_duration": {
                 "type": "string"
@@ -68,20 +61,10 @@
               }
             },
             "strength_consistency": {
-              "type": "string",
-              "enum": [
-                "high",
-                "medium",
-                "low"
-              ]
+              "type": "string"
             },
             "depth_of_support": {
-              "type": "string",
-              "enum": [
-                "deep",
-                "moderate",
-                "surface_level"
-              ]
+              "type": "string"
             }
           }
         }

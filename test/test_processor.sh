@@ -1,9 +1,9 @@
 #!/bin/bash
 
 ###############################################################################
-# Test Script for process_scholarships.py Orchestrator
+# Test Script for Scholarship Processor Pipeline
 #
-# This script demonstrates and tests the unified orchestrator's capabilities:
+# This script demonstrates and tests the unified processor's capabilities:
 # - All processing steps (1, 2, 3, 4)
 # - Selective step execution
 # - Multiprocessing support
@@ -17,9 +17,9 @@
 # - Sample data available in data/ directory
 #
 # Usage:
-#   bash test/test_orchestrator.sh              # Run all tests
-#   bash test/test_orchestrator.sh 1            # Run test 1 only
-#   bash test/test_orchestrator.sh help         # Show this help
+#   bash test/test_processor.sh              # Run all tests
+#   bash test/test_processor.sh 1            # Run test 1 only
+#   bash test/test_processor.sh help         # Show this help
 #
 ###############################################################################
 
@@ -50,7 +50,7 @@ if [ -f ".env" ]; then
 fi
 
 echo -e "${BLUE}============================================================================${NC}"
-echo "Testing process_scholarships.py Orchestrator"
+echo "Testing Scholarship Processor Pipeline"
 echo -e "${BLUE}============================================================================${NC}"
 echo ""
 
@@ -76,28 +76,28 @@ print_info() {
 }
 
 ###############################################################################
-# TEST 1: Verify orchestrator script exists and is executable
+# TEST 1: Verify processor script exists and is executable
 ###############################################################################
 test_1_verify_orchestrator() {
-    print_test_header "1" "Verify orchestrator script exists and is executable"
+    print_test_header "1" "Verify processor script exists and is executable"
 
     if [ ! -f "process_scholarships.py" ]; then
-        print_error "orchestrator script not found: process_scholarships.py"
+        print_error "processor script not found: process_scholarships.py"
         return 1
     fi
-    print_success "orchestrator script found"
+    print_success "processor script found"
 
     if [ ! -x "process_scholarships.py" ]; then
-        print_error "orchestrator script is not executable"
+        print_error "processor script is not executable"
         return 1
     fi
-    print_success "orchestrator script is executable"
+    print_success "processor script is executable"
 
     if ! python3 -m py_compile process_scholarships.py 2>/dev/null; then
-        print_error "orchestrator script has syntax errors"
+        print_error "processor script has syntax errors"
         return 1
     fi
-    print_success "orchestrator script syntax is valid"
+    print_success "processor script syntax is valid"
 
     echo ""
 }
@@ -160,9 +160,9 @@ test_3_argument_validation() {
     echo ""
 
     if python process_scholarships.py 2>&1 | grep -q "required"; then
-        print_success "orchestrator correctly requires --scholarship-folder argument"
+        print_success "processor correctly requires --scholarship-folder argument"
     else
-        print_error "orchestrator should require --scholarship-folder argument"
+        print_error "processor should require --scholarship-folder argument"
         return 1
     fi
 
@@ -215,12 +215,12 @@ test_5_output_log_cleanup() {
 }
 
 ###############################################################################
-# TEST 6: Verify orchestrator works with different step combinations
+# TEST 6: Verify processor works with different step combinations
 ###############################################################################
 test_6_step_combinations() {
-    print_test_header "6" "Verify orchestrator supports different step combinations"
+    print_test_header "6" "Verify processor supports different step combinations"
 
-    print_info "Orchestrator supports the following step combinations:"
+    print_info "Processor supports the following step combinations:"
     echo ""
     echo "  Single steps:"
     echo "    --steps 1    (extract applications)"
@@ -339,12 +339,12 @@ test_9_step_integration() {
 }
 
 ###############################################################################
-# TEST 10: Show orchestrator in action (dry-run explanation)
+# TEST 10: Show processor in action (dry-run explanation)
 ###############################################################################
 test_10_orchestrator_workflow() {
-    print_test_header "10" "Orchestrator workflow explanation"
+    print_test_header "10" "Processor workflow explanation"
 
-    echo "The orchestrator follows this workflow:"
+    echo "The processor follows this workflow:"
     echo ""
     echo "  1. Parse command-line arguments"
     echo "  2. Validate required arguments (--scholarship-folder)"
@@ -372,7 +372,7 @@ print_summary() {
     echo -e "${BLUE}============================================================================${NC}"
     echo ""
 
-    print_success "All orchestrator tests passed"
+    print_success "All processor tests passed"
     echo ""
     echo "Next steps:"
     echo "  1. Activate virtual environment:"
@@ -425,10 +425,10 @@ case $TEST_NUMBER in
         test_10_orchestrator_workflow
         ;;
     help)
-        echo "Usage: bash test/test_orchestrator.sh [test_number|all|help]"
+        echo "Usage: bash test/test_processor.sh [test_number|all|help]"
         echo ""
         echo "Test numbers:"
-        echo "  1  - Verify orchestrator script exists"
+        echo "  1  - Verify processor script exists"
         echo "  2  - Show help message"
         echo "  3  - Test argument validation"
         echo "  4  - Test step selection parsing"
@@ -437,14 +437,14 @@ case $TEST_NUMBER in
         echo "  7  - Verify multiprocessing support"
         echo "  8  - Verify argument combinations"
         echo "  9  - Verify step integration"
-        echo "  10 - Show orchestrator workflow"
+        echo "  10 - Show processor workflow"
         echo "  all - Run all tests (default)"
         echo "  help - Show this help message"
         exit 0
         ;;
     *)
         echo "Unknown test: $TEST_NUMBER"
-        echo "Run 'bash test/test_orchestrator.sh help' for usage"
+        echo "Run 'bash test/test_processor.sh help' for usage"
         exit 1
         ;;
 esac

@@ -10,9 +10,15 @@ import os
 import sys
 import json
 import argparse
+import time
 from pathlib import Path
 from typing import Optional, List
 from dotenv import load_dotenv
+
+# Ensure project root is on sys.path so `processor` package can be imported
+project_root = Path(__file__).parent.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 # Import processing classes
 from processor.utils.process_application import (
@@ -195,6 +201,13 @@ def process_single_application(
         if verbose:
             print("\n4. Processing attachments...")
         attachments = processor.get_attachments()
+        # Only process the first four attachments:
+        #  - 1 and 2: recommendation letters
+        #  - 3: resume
+        #  - 4: essay
+        if len(attachments) > 4 and verbose:
+            print(f"   Found {len(attachments)} attachments; only processing the first 4 based on naming convention.")
+        attachments = attachments[:4]
         classified_attachments = []
         # Note: Reusing 'extractor' from Step 3 to avoid DocumentConverter re-initialization
         classifier = AttachmentClassifier(model_name=model_name)
@@ -280,13 +293,30 @@ def process_single_application(
         with open(application_form_text_file, 'w', encoding='utf-8') as f:
             f.write(extracted_text)
         
-        # Save file list
-        file_list = [f[0] for f in files]
+        # Build lists of processed vs ignored files for transparency in Step 2+
+        # All files discovered in the application folder (non-empty, matching pattern)
+        all_files = [f[0] for f in files]
+        # Files we actually processed:
+        #   - the application form
+        #   - any attachments that produced a classification entry
+        processed_files_set = {app_form_path.name}
+        for att in classified_attachments:
+            filename = att.get("filename")
+            if filename:
+                processed_files_set.add(filename)
+        # Preserve original discovery order
+        processed_files = [name for name in all_files if name in processed_files_set]
+        ignored_files = [name for name in all_files if name not in processed_files_set]
+
         application_form_data = {
             "application_folder": application_folder,
             "application_form_filename": app_form_path.name,
             "extracted_text_file": "application_form_text.txt",
-            "file_list": file_list
+            # For backward compatibility, file_list remains but now only
+            # contains files that were actually processed.
+            "file_list": processed_files,
+            # New: explicit list of files that were discovered but not processed
+            "ignored_files": ignored_files,
         }
         application_form_data_file = output_path / "application_form_data.json"
         with open(application_form_data_file, 'w') as f:
@@ -358,19 +388,20 @@ def main():
         epilog="""
 Examples:
   # Process all applications (default behavior)
-  python code/step1.py --scholarship-folder "data/2026/Delaney_Wings"
+  # Uses INPUT_DATA_DIR + scholarship folder name, e.g. data/2026/Delaney_Wings
+  python processor/pipeline/step1.py --scholarship-folder "Delaney_Wings"
   
   # Process first 5 applications only
-  python code/step1.py --scholarship-folder "data/2026/Delaney_Wings" --limit 5
+  python processor/pipeline/step1.py --scholarship-folder "Delaney_Wings" --limit 5
   
   # Process all applications (explicit, same as default)
-  python code/step1.py --scholarship-folder "data/2026/Delaney_Wings" --all
+  python processor/pipeline/step1.py --scholarship-folder "Delaney_Wings" --all
   
   # Process a specific application folder
-  python code/step1.py --scholarship-folder "data/2026/Delaney_Wings" --application-folder "75179"
+  python processor/pipeline/step1.py --scholarship-folder "Delaney_Wings" --application-folder "75179"
   
   # Process with custom model and output directory
-  python code/step1.py --scholarship-folder "data/2026/Delaney_Wings" --limit 3 --model mistral --output-dir results/
+  python processor/pipeline/step1.py --scholarship-folder "Delaney_Wings" --limit 3 --model mistral --output-dir results/
         """
     )
     
@@ -378,7 +409,7 @@ Examples:
         "--scholarship-folder",
         type=str,
         default=None,
-        help="Path to the scholarship folder containing application folders (default: from SCHOLARSHIP_FOLDER env var, or {INPUT_DATA_DIR}/Delaney_Wings)"
+        help="Name or path of the scholarship folder. If only a name is provided, it is joined with INPUT_DATA_DIR (e.g. INPUT_DATA_DIR/Delaney_Wings)."
     )
     
     parser.add_argument(
@@ -430,16 +461,33 @@ Examples:
 
     args = parser.parse_args()
     
-    # Get configuration from arguments or environment variables
-    # If not provided, construct from INPUT_DATA_DIR
+    # Start timing for total processing time
+    main_start_time = time.time()
+    
+    # Get configuration from arguments or environment variables.
+    # Always resolve scholarship folder under INPUT_DATA_DIR when a bare name is provided.
+    input_data_dir = os.getenv("INPUT_DATA_DIR", "data/2026")
+
+    def _resolve_scholarship_folder(value: str) -> str:
+        """
+        Resolve a scholarship folder value against INPUT_DATA_DIR.
+
+        If the value looks like a bare name (no path separators), it is joined with
+        INPUT_DATA_DIR. If it already looks like a path, it is used as-is.
+        """
+        # Treat values containing a path separator as explicit paths
+        if "/" in value or os.path.sep in value:
+            return value
+        return str(Path(input_data_dir) / value)
+
+    # Determine scholarship folder path
     if args.scholarship_folder:
-        scholarship_folder = args.scholarship_folder
+        scholarship_folder = _resolve_scholarship_folder(args.scholarship_folder)
     elif os.getenv("SCHOLARSHIP_FOLDER"):
-        scholarship_folder = os.getenv("SCHOLARSHIP_FOLDER")
+        scholarship_folder = _resolve_scholarship_folder(os.getenv("SCHOLARSHIP_FOLDER"))
     else:
-        # Use INPUT_DATA_DIR to construct default path
-        input_data_dir = os.getenv("INPUT_DATA_DIR", "data/2026")
-        scholarship_folder = f"{input_data_dir}/Delaney_Wings"
+        # Default: use INPUT_DATA_DIR/Delaney_Wings
+        scholarship_folder = str(Path(input_data_dir) / "Delaney_Wings")
     
     model_name = args.model or os.getenv("OLLAMA_MODEL", "llama3.2")
     # Use OUTPUT_DATA_DIR from environment if output_dir not specified
@@ -562,6 +610,9 @@ Examples:
     successful = sum(1 for r in results if r.get("success", False))
     failed = len(results) - successful
     
+    # Calculate total processing time
+    total_elapsed_time = time.time() - main_start_time
+    
     # Print summary
     print("\n" + "=" * 60)
     print("Processing Summary")
@@ -569,6 +620,10 @@ Examples:
     print(f"Total processed: {len(results)}")
     print(f"Successful: {successful}")
     print(f"Failed: {failed}")
+    print(f"Total processing time: {total_elapsed_time:.2f}s ({total_elapsed_time/60:.2f} minutes)")
+    if len(results) > 0:
+        avg_time = total_elapsed_time / len(results)
+        print(f"Average time per application: {avg_time:.2f}s ({avg_time/60:.2f} minutes)")
     
     if failed > 0:
         print("\nFailed applications:")
@@ -582,8 +637,12 @@ Examples:
     summary = {
         "total_processed": len(results),
         "successful": successful,
-        "failed": failed
+        "failed": failed,
+        "total_processing_time_seconds": round(total_elapsed_time, 2),
+        "total_processing_time_minutes": round(total_elapsed_time / 60, 2)
     }
+    if len(results) > 0:
+        summary["average_time_per_application_seconds"] = round(total_elapsed_time / len(results), 2)
     if failed > 0:
         failed_folders = [r['folder'] for r in results if not r["success"]]
         summary["failed_folders"] = failed_folders

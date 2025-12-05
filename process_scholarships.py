@@ -78,7 +78,7 @@ def run_step(
     Returns:
         Tuple of (success: bool, output: str)
     """
-    step_file = f"code/step{step_num}.py"
+    step_file = f"processor/pipeline/step{step_num}.py"
 
     if not Path(step_file).exists():
         return False, f"Step {step_num} file not found: {step_file}"
@@ -89,11 +89,16 @@ def run_step(
     print(f"Running: python {step_file} {' '.join(step_args)}\n")
 
     try:
+        # Set PYTHONPATH to include current directory so processor module can be found
+        env = os.environ.copy()
+        env["PYTHONPATH"] = os.getcwd() + ":" + env.get("PYTHONPATH", "")
+
         result = subprocess.run(
             ["python", step_file] + step_args,
             capture_output=not verbose,
             text=True,
-            timeout=3600  # 1 hour timeout per step
+            timeout=3600,  # 1 hour timeout per step
+            env=env
         )
 
         if result.returncode == 0:

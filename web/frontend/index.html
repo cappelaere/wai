@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scholarship Copilot - AI Assistant</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Scholarship Copilot</h1>
+            <p class="subtitle">AI-powered scholarship application analysis</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Sidebar: Application Context -->
+            <aside class="sidebar">
+                <div class="context-panel">
+                    <h2>Application Focus</h2>
+                    <div id="currentApp" class="current-app">
+                        <p>Select an application to begin analysis</p>
+                    </div>
+
+                    <h3>Tools Available</h3>
+                    <div id="toolsList" class="tools-list">
+                        <p>Loading tools...</p>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Chat Interface -->
+            <main class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message system">
+                        <p>Welcome to Scholarship Copilot! I can help you analyze and compare scholarship applications. Select an application to begin.</p>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <div class="session-info">
+                        <span id="sessionId">Session: loading...</span>
+                        <button id="newSessionBtn" class="button-small">New Session</button>
+                    </div>
+
+                    <form id="chatForm" class="chat-form">
+                        <input
+                            type="text"
+                            id="queryInput"
+                            placeholder="Ask me about scholarship applications..."
+                            autocomplete="off"
+                        >
+                        <button type="submit" class="button-send">Send</button>
+                    </form>
+
+                    <div id="loading" class="loading" style="display: none;">
+                        <span class="spinner"></span> Analyzing...
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

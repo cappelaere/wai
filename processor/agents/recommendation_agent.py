@@ -19,12 +19,12 @@ class RecommendationAgent(BaseAgent):
     def __init__(self, model_name: str = "llama3.2", ollama_host: Optional[str] = None):
         """
         Initialize the Recommendation Agent with Ollama.
-        
+
         Args:
             model_name: Name of the Ollama model to use
             ollama_host: Optional custom Ollama host URL (default: http://localhost:11434)
         """
-        super().__init__(model_name=model_name, ollama_host=ollama_host)
+        super().__init__(model_name=model_name, ollama_host=ollama_host, schema_name="recommendation_agent_schema.json")
     
     def analyze_recommendation_profile(
         self,
@@ -47,7 +47,14 @@ class RecommendationAgent(BaseAgent):
         """
         # Prepare recommendation texts
         recommendation_texts = []
+        # Ensure recommendations is a list
+        if not isinstance(recommendations, list):
+            recommendations = [recommendations] if recommendations else []
+
         for rec in recommendations:
+            # Ensure rec is a dict before calling .get()
+            if not isinstance(rec, dict):
+                continue
             if rec.get('extracted_text_file'):
                 # Read the extracted text file
                 try:
@@ -125,10 +132,10 @@ Based on the recommendation letters{', and the additional criteria provided abov
         }}
     }},
     "scores": {{
-        "average_support_strength_score": 0-100,
-        "consistency_of_support_score": 0-100,
-        "depth_of_endorsement_score": 0-100,
-        "overall_score": 0-100
+        "average_support_strength_score": <integer 0-100, required>,
+        "consistency_of_support_score": <integer 0-100, required>,
+        "depth_of_endorsement_score": <integer 0-100, required>,
+        "overall_score": <integer 0-100, required>
     }},
     "score_breakdown": {{
         "average_support_strength_score_reasoning": "Explanation of average support strength score",
@@ -137,21 +144,37 @@ Based on the recommendation letters{', and the additional criteria provided abov
     }}
 }}
 
-Return ONLY valid JSON, no additional text or markdown formatting."""
+CRITICAL JSON FORMAT REQUIREMENTS:
+- You MUST respond with ONLY valid JSON
+- Do NOT include markdown code blocks (```json or ```)
+- Do NOT include any text before or after the JSON
+- Do NOT include comments or explanations
+- Do NOT use trailing commas
+- Do NOT use single quotes (use double quotes only)
+- All scores must be integers between 0 and 100
+- The response must be parseable by json.loads() without any preprocessing"""
 
         try:
-            response_text = self._chat_with_retry(
-                messages=[{"role": "user", "content": prompt}]
-            )
+            # Build full file path for debugging (use absolute paths)
+            file_paths = []
+            if recommendations:
+                for rec in recommendations:
+                    if isinstance(rec, dict):
+                        if text_files_base_path and rec.get('extracted_text_file'):
+                            file_path = text_files_base_path / rec['extracted_text_file']
+                            file_paths.append(str(file_path.resolve() if hasattr(file_path, 'resolve') else file_path.absolute()))
+                        elif rec.get('filename'):
+                            file_paths.append(rec.get('filename'))
 
-            # Extract JSON
-            start_idx = response_text.find('{')
-            end_idx = response_text.rfind('}')
-            if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
-                response_text = response_text[start_idx:end_idx + 1]
+            full_filename = " | ".join(file_paths) if file_paths else "unknown"
 
-            # Use BaseAgent's JSON parsing method
-            result = self.parse_llm_response(response_text)
+            # Prepare messages for potential retry
+            messages = [{"role": "user", "content": prompt}]
+
+            response_text = self._chat_with_retry(messages, system_message=self.system_message)
+
+            # Use BaseAgent's JSON parsing method (handles markdown extraction and retry)
+            result = self.parse_llm_response(response_text, filename=full_filename, messages=messages)
             return result
 
         except ValueError as e:

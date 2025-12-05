@@ -1,0 +1,44 @@
+{
+  "summary": "Jessica maintains an excellent 3.85 GPA while pursuing an aerospace engineering degree with a focus on propulsion systems. She has earned multiple academic honors and accolades, and her coursework demonstrates strong preparation for a career in engineering. Her trajectory shows consistent academic growth and deep engagement with her field of study.",
+  "profile_features": {
+    "current_school_name": "State University of Technology",
+    "program": "Aerospace Engineering, Propulsion Systems Track",
+    "education_level": "undergraduate",
+    "gpa": "3.85",
+    "academic_awards": [
+      "Dean's List (all semesters)",
+      "AIAA Scholarship Award",
+      "Women in Engineering Scholarship",
+      "Tau Beta Pi Honor Society",
+      "Phi Kappa Phi Honor Society"
+    ],
+    "relevant_courses": [
+      "Propulsion Systems Design",
+      "Computational Fluid Dynamics",
+      "Aircraft Structures and Design",
+      "Aerodynamics I and II",
+      "Control Systems",
+      "Materials Science for Aerospace"
+    ],
+    "academic_trajectory": "Started with 3.5 GPA freshman year, demonstrating improvement each semester to current 3.85. Progression shows increasing engagement with advanced aerospace coursework.",
+    "strengths": [
+      "Exceptional grasp of STEM fundamentals",
+      "Strong performance in technical courses",
+      "Consistent upward trajectory",
+      "Effective time management",
+      "Deep engagement with aerospace specialization"
+    ],
+    "areas_for_improvement": []
+  },
+  "scores": {
+    "academic_performance_score": 90,
+    "academic_relevance_score": 95,
+    "academic_readiness_score": 92,
+    "overall_score": 92
+  },
+  "score_breakdown": {
+    "academic_performance_score_reasoning": "3.85 GPA with consistent performance and multiple academic honors demonstrates strong academic capability.",
+    "academic_relevance_score_reasoning": "Aerospace engineering major with propulsion focus directly aligns with aviation career. Relevant coursework and specialized track show clear preparation.",
+    "academic_readiness_score_reasoning": "Strong STEM foundation, relevant coursework, and academic honors indicate excellent readiness for advanced aviation studies and professional roles."
+  }
+}

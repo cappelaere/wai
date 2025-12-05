@@ -1,0 +1,69 @@
+{
+  "summary": "The two recommendation letters provide generally positive support with some nuance. The academic recommender offers strong endorsement of technical capability, while the professional reference highlights growth potential with some initial adjustment period. Both recommend the applicant for further opportunities.",
+  "profile_features": {
+    "recommendations": [
+      {
+        "recommender_role": "instructor",
+        "relationship_duration": "1 semester in capstone project course",
+        "key_strengths_mentioned": [
+          "Strong analytical skills",
+          "Solid grasp of engineering fundamentals",
+          "Completed capstone project successfully",
+          "Collaborative team member"
+        ],
+        "specific_examples": [
+          "Led analysis component of team project",
+          "Contributed valuable insights to design discussions",
+          "Delivered strong final presentation"
+        ],
+        "potential_concerns": [
+          "Sometimes hesitant to voice ideas in large group settings",
+          "Limited prior exposure to some aviation-specific software"
+        ],
+        "overall_tone": "positive"
+      },
+      {
+        "recommender_role": "employer",
+        "relationship_duration": "6 months as engineering intern",
+        "key_strengths_mentioned": [
+          "Willingness to learn",
+          "Takes feedback well and implements improvements",
+          "Shows increasing confidence and capability",
+          "Good team fit and positive attitude"
+        ],
+        "specific_examples": [
+          "Initially struggled with CAD software but became proficient in 2 months",
+          "Volunteered for additional training and certification",
+          "By end of internship, worked more independently on project tasks"
+        ],
+        "potential_concerns": [
+          "Initial onboarding period was longer than typical",
+          "Needed more guidance on industry-standard procedures",
+          "Limited professional aviation experience prior to internship"
+        ],
+        "overall_tone": "positive"
+      }
+    ],
+    "aggregate_analysis": {
+      "common_themes": [
+        "Solid technical foundation with potential for growth",
+        "Positive attitude toward learning and feedback",
+        "Good collaborative skills",
+        "Need for some development in professional confidence"
+      ],
+      "strength_consistency": "medium",
+      "depth_of_support": "moderate"
+    }
+  },
+  "scores": {
+    "average_support_strength_score": 72,
+    "consistency_of_support_score": 71,
+    "depth_of_endorsement_score": 70,
+    "overall_score": 71
+  },
+  "score_breakdown": {
+    "average_support_strength_score_reasoning": "Both recommenders support the applicant with generally positive feedback, though endorsements are measured rather than enthusiastic.",
+    "consistency_of_support_score_reasoning": "Both letters mention learning curve and need for skill development, suggesting applicant is capable but requires more support than some candidates.",
+    "depth_of_endorsement_score_reasoning": "Relationships are shorter (1 semester, 6 months) which limits depth of knowledge, though both recommenders provide specific observations."
+  }
+}

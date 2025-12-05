@@ -26,13 +26,6 @@
           "type": [
             "string",
             "null"
-          ],
-          "enum": [
-            "high_school",
-            "undergraduate",
-            "graduate",
-            "other",
-            null
           ]
         },
         "gpa": {
@@ -44,28 +37,28 @@
         "academic_awards": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": ["string", "null"]
           }
         },
         "relevant_courses": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": ["string", "null"]
           }
         },
         "academic_trajectory": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "strengths": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": ["string", "null"]
           }
         },
         "areas_for_improvement": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": ["string", "null"]
           }
         }
       }

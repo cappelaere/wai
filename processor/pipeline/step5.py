@@ -17,11 +17,17 @@ import json
 import argparse
 import statistics
 import re
+import time
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime
 from collections import Counter, defaultdict
 from dotenv import load_dotenv
+
+# Ensure project root is on sys.path so `processor` package can be imported
+project_root = Path(__file__).parent.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 # Try to import reportlab for PDF generation
 try:
@@ -61,14 +67,22 @@ def load_template(template_path: Optional[Path] = None) -> str:
         with open(template_path, 'r', encoding='utf-8') as f:
             return f.read()
     
-    # Default template path
-    default_template = Path(__file__).parent / "templates" / "scholarship_statistics_template.md"
-    if default_template.exists():
-        with open(default_template, 'r', encoding='utf-8') as f:
-            return f.read()
+    # Look for default template in multiple possible locations
+    search_paths = [
+        # New location: alongside pipeline step files
+        Path(__file__).parent / "templates" / "scholarship_statistics_template.md",
+        # Legacy/location: top-level processor/templates
+        Path(__file__).parent.parent / "templates" / "scholarship_statistics_template.md",
+    ]
+    
+    for default_template in search_paths:
+        if default_template.exists():
+            with open(default_template, 'r', encoding='utf-8') as f:
+                return f.read()
     
     # Fallback: return error message
-    return f"Error: Template Not Found\nTemplate path: {template_path or default_template}"
+    search_paths_str = "\n".join(str(p) for p in search_paths)
+    return f"Error: Template Not Found\nTemplate search paths:\n{search_paths_str}"
 
 
 def find_application_folders(output_dir: Path, scholarship_folder: str) -> List[Path]:
@@ -180,15 +194,25 @@ def extract_statistics(applications: List[Path], verbose: bool = True) -> Dict[s
         profile_data = profile.get('profile', {})
         home_address = profile_data.get('home_address', {})
         
-        # Geographic data
-        country_raw = home_address.get('country', '').strip()
+        # Geographic data (guard against None / non-string values)
+        country_raw = home_address.get('country', '')
+        if country_raw is None:
+            country_raw = ''
+        elif not isinstance(country_raw, str):
+            country_raw = str(country_raw)
+        country_raw = country_raw.strip()
         country = None
         if country_raw:
             # Standardize country name once
             country = standardize_country_name(country_raw)
             stats['countries'][country] += 1
         
-        state_province_raw = home_address.get('state_province', '').strip()
+        state_province_raw = home_address.get('state_province', '')
+        if state_province_raw is None:
+            state_province_raw = ''
+        elif not isinstance(state_province_raw, str):
+            state_province_raw = str(state_province_raw)
+        state_province_raw = state_province_raw.strip()
         if state_province_raw:
             # Standardize state/province name (for US states, use two-letter codes)
             state_province_std = standardize_state_name(state_province_raw, country)
@@ -198,7 +222,12 @@ def extract_statistics(applications: List[Path], verbose: bool = True) -> Dict[s
             else:
                 stats['states'][state_province_std] += 1
         
-        city = home_address.get('city', '').strip()
+        city = home_address.get('city', '')
+        if city is None:
+            city = ''
+        elif not isinstance(city, str):
+            city = str(city)
+        city = city.strip()
         if city and country:
             # Use standardized country name for cities
             stats['cities'][f"{city}, {country}"] += 1
@@ -1029,6 +1058,9 @@ Examples:
     
     args = parser.parse_args()
     
+    # Start timing for total processing time
+    main_start_time = time.time()
+    
     # Get configuration from arguments or environment variables
     base_output_dir = Path(os.getenv("OUTPUT_DATA_DIR", "output"))
     if args.output_dir:
@@ -1132,7 +1164,12 @@ Examples:
             if verbose:
                 print("  PDF generation failed. Markdown report is still available.")
     
+    # Calculate total processing time
+    total_elapsed_time = time.time() - main_start_time
+    
     if verbose:
+        print("=" * 60)
+        print(f"Total processing time: {total_elapsed_time:.2f}s ({total_elapsed_time/60:.2f} minutes)")
         print("=" * 60)
     
     # Log summary
@@ -1142,7 +1179,9 @@ Examples:
         "countries": len(stats['countries']),
         "us_states": len([s for s in stats['states'] if ', United States' in s or s.upper() in ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY', 'DC', 'PR', 'AS', 'GU', 'VI', 'MP']]),
         "output_file": str(output_file),
-        "pdf_generated": not args.markdown_only and REPORTLAB_AVAILABLE
+        "pdf_generated": not args.markdown_only and REPORTLAB_AVAILABLE,
+        "total_processing_time_seconds": round(total_elapsed_time, 2),
+        "total_processing_time_minutes": round(total_elapsed_time / 60, 2)
     }
     
     log_summary("step5.py", summary)

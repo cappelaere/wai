@@ -1,0 +1,80 @@
+{
+  "summary": "All three recommendation letters provide strong endorsement of the applicant, with consistent themes of technical excellence, dedication to aviation, and outstanding character. The recommenders—spanning academic and professional contexts—paint a cohesive picture of a capable, motivated individual well-suited for aviation careers.",
+  "profile_features": {
+    "recommendations": [
+      {
+        "recommender_role": "instructor",
+        "relationship_duration": "2 years through multiple aerospace engineering courses",
+        "key_strengths_mentioned": [
+          "Exceptional technical understanding",
+          "Consistent engagement and curiosity",
+          "Strong work ethic and dedication",
+          "Ability to explain complex concepts clearly"
+        ],
+        "specific_examples": [
+          "Earned top marks in advanced aerodynamics course",
+          "Took initiative to help struggling classmates",
+          "Completed semester-long propulsion design project with innovative solutions"
+        ],
+        "potential_concerns": [],
+        "overall_tone": "very_positive"
+      },
+      {
+        "recommender_role": "employer",
+        "relationship_duration": "1.5 years as intern and part-time employee",
+        "key_strengths_mentioned": [
+          "Professional and reliable",
+          "Quick learner who requires minimal supervision",
+          "Strong communication skills",
+          "Proactive problem-solving approach"
+        ],
+        "specific_examples": [
+          "Independently identified and implemented efficiency improvements",
+          "Trained new interns in department procedures",
+          "Successfully led small project team with tight timeline"
+        ],
+        "potential_concerns": [],
+        "overall_tone": "very_positive"
+      },
+      {
+        "recommender_role": "mentor",
+        "relationship_duration": "3 years through aerospace club mentoring",
+        "key_strengths_mentioned": [
+          "Genuine passion for aviation",
+          "Supportive and encouraging attitude toward peers",
+          "Leadership by example",
+          "Commitment to field beyond personal career"
+        ],
+        "specific_examples": [
+          "Mentored 5 younger students, 3 now pursuing aerospace careers",
+          "Organized and led first-time flight experience trips for club",
+          "Consistently volunteers for club leadership roles"
+        ],
+        "potential_concerns": [],
+        "overall_tone": "very_positive"
+      }
+    ],
+    "aggregate_analysis": {
+      "common_themes": [
+        "Technical excellence and quick learning",
+        "Reliability and strong work ethic",
+        "Genuine passion for aviation",
+        "Leadership and mentoring ability",
+        "Strong communication skills"
+      ],
+      "strength_consistency": "high",
+      "depth_of_support": "deep"
+    }
+  },
+  "scores": {
+    "average_support_strength_score": 93,
+    "consistency_of_support_score": 94,
+    "depth_of_endorsement_score": 91,
+    "overall_score": 93
+  },
+  "score_breakdown": {
+    "average_support_strength_score_reasoning": "All three letters provide strong, specific endorsement with concrete examples and consistent themes of excellence.",
+    "consistency_of_support_score_reasoning": "Remarkable consistency across academic instructor, employer, and peer mentor regarding technical ability, work ethic, and aviation passion.",
+    "depth_of_endorsement_score_reasoning": "Letters demonstrate deep knowledge of applicant across multiple contexts with specific examples and extended relationships."
+  }
+}

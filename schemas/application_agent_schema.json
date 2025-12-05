@@ -165,16 +165,19 @@
               "type": "boolean"
             },
             "num_recommendation_letters": {
-              "type": "integer"
+              "type": ["integer", "null"]
             },
             "has_medical_certificate": {
-              "type": "boolean"
+              "type": ["boolean", "null"]
             },
             "has_logbook": {
-              "type": "boolean"
+              "type": ["boolean", "null"]
             },
             "num_attachments": {
-              "type": "integer"
+              "type": [
+                "integer",
+                "null"
+              ]
             }
           }
         }

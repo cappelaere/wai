@@ -11,43 +11,36 @@
       "type": "object",
       "properties": {
         "motivation_summary": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "career_goals_summary": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "aviation_path_stage": {
-          "type": "string",
-          "enum": [
-            "exploring",
-            "training",
-            "early_career",
-            "professional",
-            "other"
-          ]
+          "type": ["string", "null"]
         },
         "community_service_summary": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "leadership_roles": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": ["string", "null"]
           }
         },
         "personal_character_indicators": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": ["string", "null"]
           }
         },
         "alignment_with_wai": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "unique_strengths": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": ["string", "null"]
           }
         }
       }
@@ -58,25 +51,29 @@
         "motivation_score": {
           "type": [
             "integer",
-            "number"
+            "number", 
+            "null"
           ]
         },
         "goals_clarity_score": {
           "type": [
             "integer",
-            "number"
+            "number", 
+            "null"
           ]
         },
         "character_service_leadership_score": {
           "type": [
             "integer",
-            "number"
+            "number", 
+            "null"
           ]
         },
         "overall_score": {
           "type": [
             "integer",
-            "number"
+            "number",
+            "null"
           ]
         }
       },

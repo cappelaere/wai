@@ -1,0 +1,44 @@
+{
+  "summary": "The applicant demonstrates a robust social media presence across multiple platforms with strong emphasis on professional networking and aviation content sharing. LinkedIn profile shows active engagement with the aerospace industry, while Instagram reflects both professional development activities and personal aviation interests.",
+  "profile_features": {
+    "platforms_found": {
+      "facebook": {
+        "present": false,
+        "link": null,
+        "handle": null,
+        "evidence": "No Facebook link or reference found in application materials"
+      },
+      "instagram": {
+        "present": true,
+        "link": "https://instagram.com/sarah.aviation.journey",
+        "handle": "@sarah.aviation.journey",
+        "evidence": "Instagram handle listed in resume under professional profiles; posts include flight training updates and aviation events"
+      },
+      "tiktok": {
+        "present": false,
+        "link": null,
+        "handle": null,
+        "evidence": "No TikTok presence mentioned or referenced in application"
+      },
+      "linkedin": {
+        "present": true,
+        "link": "https://linkedin.com/in/sarahpilotstudent",
+        "handle": "sarahpilotstudent",
+        "evidence": "LinkedIn URL prominently listed in resume contact section; profile shows 500+ connections and active engagement with aerospace industry content"
+      }
+    },
+    "total_platforms": 2,
+    "has_professional_presence": true,
+    "notes": "Applicant maintains professional presence on Instagram with aviation-focused content. Strong LinkedIn presence with active industry engagement demonstrates serious commitment to aviation career development."
+  },
+  "scores": {
+    "social_presence_score": 70,
+    "professional_presence_score": 88,
+    "overall_score": 79
+  },
+  "score_breakdown": {
+    "social_presence_score_reasoning": "Active presence on 2 of 4 major platforms. Instagram activity shows sustained engagement with aviation-related content.",
+    "professional_presence_score_reasoning": "Strong LinkedIn presence with substantial network and regular industry engagement. LinkedIn is primary professional platform and shows serious career focus.",
+    "overall_score_reasoning": "Solid professional social media presence, particularly on LinkedIn, indicating active professional networking and genuine industry engagement."
+  }
+}
